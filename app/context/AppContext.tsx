@@ -19,16 +19,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [members, setMembers] = useState<Member[]>([
-    {
-      id: "1",
-      name: "Iliya Mehri",
-      email: "iliya@gym.com",
-      plan: "Premium (6 Months)",
-      price: 150,
-      status: "Active",
-    },
-  ]);
+  const [members, setMembers] = useState<Member[]>([]);
 
   const addMember = (newMember: Omit<Member, "id">) => {
     const memberWithId: Member = {
