@@ -2,7 +2,7 @@
 
 import React from "react";
 import Sidebar from "@/app/components/Sidebar";
-import { useApp } from "./context/AppContext";
+import { useApp } from "./components/context/AppContext";
 
 // ۱. تعریف مستقیم تایپ ممبر در همین فایل برای حل مشکل ایمپورت
 export interface Member {

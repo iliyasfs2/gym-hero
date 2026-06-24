@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import Sidebar from "@/app/components/Sidebar";
-import { useApp } from "../context/AppContext";
+import { useApp } from "@/app/components/context/AppContext";
 
 export interface Member {
   id: string;
