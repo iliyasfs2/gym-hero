@@ -4,7 +4,7 @@ import React from "react";
 import Sidebar from "@/app/components/Sidebar";
 import { useApp } from "./components/context/AppContext";
 
-// ۱. تعریف مستقیم تایپ ممبر در همین فایل برای حل مشکل ایمپورت
+
 export interface Member {
   id: string;
   name: string;
@@ -14,7 +14,7 @@ export interface Member {
   status: "Active" | "Inactive";
 }
 
-// ۲. تعریف ساختار برای آیتم‌های بخش آمار (Stats)
+
 interface StatItem {
   id: number;
   title: string;
@@ -25,10 +25,10 @@ interface StatItem {
 }
 
 export default function AdminDashboard() {
-  // استفاده از کامپوننت با دیتای کانتکست
+  
   const { members } = useApp();
 
-  // مشخص کردن صریح تایپ محاسبات عددی
+  
   const totalMembers: number = members.length;
   const activeSubs: number = members.filter(
     (m) => m.status === "Active",
@@ -38,7 +38,7 @@ export default function AdminDashboard() {
     0,
   );
 
-  // متصل کردن اینترفیس StatItem به آرایه آمار
+
   const stats: StatItem[] = [
     {
       id: 1,
@@ -81,7 +81,7 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          {/* بخش کارت‌های آمار */}
+        
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {stats.map((stat: StatItem) => (
               <div
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
             ))}
           </div>
 
-          {/* بخش لیست آخرین فعالیت اعضا */}
+          
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-slate-300 px-1">
               Recent Activity
