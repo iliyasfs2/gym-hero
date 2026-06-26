@@ -13,29 +13,27 @@ export default function AuthPage() {
   const router = useRouter();
 
   
-  const handleSendOtp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setMessage("");
+ const handleSendOtp = async (e: React.FormEvent<HTMLFormElement>) => {
+   e.preventDefault();
+   setLoading(true);
+   setError("");
+   setMessage("");
 
-    const { error: otpError } = await supabase.auth.signInWithOtp({
-      email: email,
-      options: {
-        shouldCreateUser: true,
-      },
-    });
+  
+   const { error: otpError } = await supabase.auth.signInWithOtp({
+     email: email,
+   });
 
-    if (otpError) {
-      setError(otpError.message);
-      setLoading(false);
-      return;
-    }
+   if (otpError) {
+     setError(otpError.message);
+     setLoading(false);
+     return;
+   }
 
-    setMessage("A 6-digit verification code has been sent to your email.");
-    setStep("code");
-    setLoading(false);
-  };
+   setMessage("A verification code has been sent to your email.");
+   setStep("code");
+   setLoading(false);
+ };
 
 
   const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
