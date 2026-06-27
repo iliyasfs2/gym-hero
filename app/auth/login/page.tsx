@@ -1,6 +1,7 @@
+// app/auth/login/page.tsx
 "use client";
+
 import { useState } from "react";
-import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
@@ -12,124 +13,80 @@ export default function AuthPage() {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
-  
- const handleSendOtp = async (e: React.FormEvent<HTMLFormElement>) => {
-   e.preventDefault();
-   setLoading(true);
-   setError("");
-   setMessage("");
+  // 1. Mock OTP Sending Logic
+  const handleSendOtp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setMessage("");
 
-  
-   const { error: otpError } = await supabase.auth.signInWithOtp({
-     email: email,
-   });
+    setTimeout(() => {
+      setMessage("Development Mode: Mock code sent successfully.");
+      setStep("code");
+      setLoading(false);
+    }, 1000);
+  };
 
-   if (otpError) {
-     setError(otpError.message);
-     setLoading(false);
-     return;
-   }
-
-   setMessage("A verification code has been sent to your email.");
-   setStep("code");
-   setLoading(false);
- };
-
-
+  // 2. Mock OTP Verification Logic
   const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const { data, error: verifyError } = await supabase.auth.verifyOtp({
-      email: email,
-      token: token,
-      type: 'email',
-    });
-
-    if (verifyError) {
-      setError("Invalid or expired verification code.");
-      setLoading(false);
-      return;
-    }
-
-    router.push("/member/subscription");
+    setTimeout(() => {
+      if (token.length === 6) {
+        router.push("/member/subscription");
+      } else {
+        setError("Please enter a valid 6-digit code.");
+        setLoading(false);
+      }
+    }, 1000);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 font-sans">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-md">
-        <h2 className="mb-6 text-center text-2xl font-bold text-gray-800 tracking-tight">
-          Sign In to Gym Hero
-        </h2>
+    <div>
+      <div>
+        <h2>Sign In to Gym Hero</h2>
 
-        {error && (
-          <p className="mb-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg text-center border border-red-200">
-            {error}
-          </p>
-        )}
-        {message && (
-          <p className="mb-4 text-sm text-green-600 bg-green-50 p-3 rounded-lg text-center border border-green-200">
-            {message}
-          </p>
-        )}
+        {error && <p>{error}</p>}
+        {message && <p>{message}</p>}
 
-        
         {step === "email" ? (
           <form onSubmit={handleSendOtp}>
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-600 mb-2">
-                Email Address
-              </label>
+            <div>
+              <label>Email Address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 p-3 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-800"
                 placeholder="name@example.com"
                 required
                 disabled={loading}
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-lg bg-blue-600 p-3 text-white font-medium hover:bg-blue-700 disabled:bg-gray-400 transition-colors shadow-sm"
-            >
-              {loading ? "Sending..." : "Send Verification Code"}
+            <button type="submit" disabled={loading}>
+              {loading ? "Sending..." : "Send Code"}
             </button>
           </form>
         ) : (
-         
           <form onSubmit={handleVerifyOtp}>
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-600 mb-2">
-                Enter 6-Digit Code
-              </label>
+            <div>
+              <label>Enter 6-Digit Code</label>
               <input
                 type="text"
                 maxLength={6}
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 p-3 text-center tracking-[0.5em] font-bold text-2xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all text-gray-800"
                 placeholder="------"
                 required
                 disabled={loading}
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-lg bg-green-600 p-3 text-white font-medium hover:bg-green-700 disabled:bg-gray-400 transition-colors shadow-sm"
-            >
-              {loading ? "Verifying..." : "Verify & Sign In"}
+            <button type="submit" disabled={loading}>
+              {loading ? "Verifying..." : "Verify & Login"}
             </button>
-            <button
-              type="button"
-              onClick={() => setStep("email")}
-              className="w-full mt-4 text-sm text-gray-400 hover:text-gray-600 text-center block transition-colors"
-            >
-              ← Change email address
+            <button type="button" onClick={() => setStep("email")}>
+              Change Email Address
             </button>
           </form>
         )}
