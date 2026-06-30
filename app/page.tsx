@@ -5,6 +5,8 @@ import Sidebar from "@/app/components/Sidebar";
 import GlowLayout from "@/app/components/GlowLayout";
 import { useApp } from "@/app/components/context/AppContext";
 import WelcomeToast from "@/app/components/WelcomeToast";
+import AnalyticsCharts from "@/app/components/AnalyticsCharts";
+import LatestMembersTable from "@/app/components/LatestMembersTable";
 
 export interface Member {
   id: string;
@@ -91,7 +93,6 @@ export default function AdminDashboard() {
               </p>
             </div>
 
-            {/* Grid Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               {stats.map((stat: StatItem) => (
                 <div
@@ -119,12 +120,10 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
-
-            {/* Recent Activity */}
-            <div className="glass-card-fixed space-y-4 p-6 rounded-2xl shadow-xl">
-              <h2 className="text-lg font-semibold text-slate-300 px-1">
-                Recent Activity
-              </h2>
+            <AnalyticsCharts />
+            <LatestMembersTable />
+            
+              
               <div className="space-y-3">
                 {members.slice(0, 5).map((member: Member) => (
                   <div
@@ -153,7 +152,7 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-      </div>
+     
     </GlowLayout>
   );
 }
