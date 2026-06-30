@@ -31,6 +31,7 @@ const monthlyAnalyticsData: ChartDataPoint[] = [
 ];
 
 export default function AnalyticsCharts(): JSX.Element {
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
     

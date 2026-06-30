@@ -9,6 +9,7 @@ export interface Member {
   plan: string;
   price: number;
   status: "Active" | "Inactive";
+  phone?: string;
 }
 
 interface AppContextType {
