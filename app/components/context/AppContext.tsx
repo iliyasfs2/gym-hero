@@ -5,11 +5,11 @@ import React, { createContext, useContext, useState } from "react";
 export interface Member {
   id: string;
   name: string;
-  email: string;
+  phone: string;
   plan: string;
   price: number;
-  status: "Active" | "Inactive";
-  phone?: string;
+  status: "Active" | "Expired" | "Expiring Soon";
+  joinDate: string;
 }
 
 interface AppContextType {
@@ -25,7 +25,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const addMember = (newMember: Omit<Member, "id">) => {
     const memberWithId: Member = {
       ...newMember,
-      id: Math.random().toString(36).substr(2, 9),
+      id: crypto.randomUUID(),
     };
     setMembers((prev) => [...prev, memberWithId]);
   };
@@ -39,8 +39,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
 export function useApp() {
   const context = useContext(AppContext);
-  if (!context) {
-    throw new Error("useApp must be used within an AppProvider");
-  }
+  if (!context) throw new Error("useApp must be used within an AppProvider");
   return context;
 }
