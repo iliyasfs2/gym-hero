@@ -39,10 +39,17 @@ export default function Sidebar() {
           <span className="text-sm">Members</span>
         </Link>
 
-        <div className="flex items-center px-4 py-3 border border-transparent hover:bg-white/[0.04] rounded-xl transition-all cursor-not-allowed text-slate-600">
+        <Link
+          href="/payments"
+          className={`flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ${
+            pathname === "/payments"
+              ? "bg-white/[0.08] border-white/[0.1] text-white font-semibold"
+              : "border-transparent text-slate-400 hover:bg-white/[0.04] hover:text-white"
+          }`}
+        >
           <span className="ml-3 text-base">💳</span>
-          <span className="text-sm">Billing</span>
-        </div>
+          <span className="text-sm">Payments</span>
+        </Link>
       </nav>
     </aside>
   );
