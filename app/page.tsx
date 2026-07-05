@@ -80,15 +80,17 @@ export default function AdminDashboard() {
   return (
     <GlowLayout>
       <WelcomeToast />
-      <div className="flex min-h-screen bg-[#0a0f1d] text-white w-full">
+
+      <div className="flex h-screen w-full bg-[#0b1224] text-white overflow-hidden">
         <Sidebar />
-        <div className="flex-1 p-8 overflow-y-auto z-10">
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold text-slate-200">
+
+        <div className="flex-1 h-full bg-[#0b1224] p-4 md:p-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
+          <div className="w-full mx-auto">
+            <div className="mb-6 border-b border-white/[0.02] pb-5">
+              <h1 className="text-2xl font-bold text-slate-200 tracking-tight">
                 Dashboard Overview
               </h1>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 Real-time gym performance and analytics (View Only)
               </p>
             </div>
@@ -120,39 +122,38 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
+
             <AnalyticsCharts />
             <LatestMembersTable />
-            
-              
-              <div className="space-y-3">
-                {members.slice(0, 5).map((member: Member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between p-4 bg-black/30 rounded-xl border border-white/[0.04] hover:bg-white/[0.04] transition-all duration-200"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-xl bg-white/[0.02] p-2 rounded-lg border border-white/[0.05]">
-                        {member.status === "Active" ? "🟢" : "🔴"}
-                      </span>
-                      <div>
-                        <p className="text-sm font-medium text-slate-200">
-                          {member.name || "Unknown Member"}
-                        </p>
-                        <p className="text-xs text-slate-400">
-                          Registered with {member.plan || "No Plan"} Plan
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-xs font-mono text-slate-500">
-                      Just now
+
+            <div className="space-y-3 mt-6">
+              {members.slice(0, 5).map((member: Member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between p-4 bg-black/30 rounded-xl border border-white/[0.04] hover:bg-white/[0.04] transition-all duration-200"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="text-xl bg-white/[0.02] p-2 rounded-lg border border-white/[0.05]">
+                      {member.status === "Active" ? "🟢" : "🔴"}
                     </span>
+                    <div>
+                      <p className="text-sm font-medium text-slate-200">
+                        {member.name || "Unknown Member"}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        Registered with {member.plan || "No Plan"} Plan
+                      </p>
+                    </div>
                   </div>
-                ))}
-              </div>
+                  <span className="text-xs font-mono text-slate-500">
+                    Just now
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-     
+      </div>
     </GlowLayout>
   );
 }

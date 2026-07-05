@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Transaction } from "./types";
+import InvoiceModal from "./InvoiceModal";
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -13,6 +14,9 @@ export default function TransactionTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
 
   const filteredTransactions = transactions.filter(
     (tx) =>
@@ -31,6 +35,11 @@ export default function TransactionTable({
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
+  };
+
+  const handleOpenInvoice = (tx: Transaction) => {
+    setSelectedTx(tx);
+    setIsInvoiceOpen(true);
   };
 
   const getStatusStyle = (status: Transaction["status"]) => {
@@ -91,7 +100,11 @@ export default function TransactionTable({
                   <td className="px-6 py-4 font-medium text-slate-200">
                     {tx.memberName}
                   </td>
-                  <td className="px-6 py-4 text-slate-500 font-mono text-xs">
+
+                  <td
+                    onClick={() => handleOpenInvoice(tx)}
+                    className="px-6 py-4 text-blue-500 hover:text-blue-400 cursor-pointer font-mono text-xs transition-colors underline decoration-blue-500/30 underline-offset-2"
+                  >
                     {tx.invoiceNo}
                   </td>
                   <td className="px-6 py-4 font-semibold text-blue-400">
@@ -117,7 +130,10 @@ export default function TransactionTable({
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="text-xs bg-slate-800 hover:bg-slate-700 border border-white/[0.06] text-slate-300 px-3 py-1.5 rounded-lg transition-all cursor-pointer group-hover:border-blue-500/30">
+                    <button
+                      onClick={() => handleOpenInvoice(tx)}
+                      className="text-xs bg-slate-800 hover:bg-slate-700 border border-white/[0.06] text-slate-300 px-3 py-1.5 rounded-lg transition-all cursor-pointer group-hover:border-blue-500/30"
+                    >
                       View Receipt
                     </button>
                   </td>
@@ -155,49 +171,47 @@ export default function TransactionTable({
             entries
           </div>
 
-          {totalPages > 1 && (
-            <div className="w-full flex justify-center border-t border-white/[0.04] pt-5 mt-2">
-              <div className="flex items-center gap-1.5 mx-auto">
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 border border-white/[0.04] text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-                >
-                  Previous
-                </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 border border-white/[0.04] text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              Previous
+            </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-8 h-8 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                        currentPage === page
-                          ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                          : "bg-slate-800 border border-white/[0.04] text-slate-400 hover:text-slate-200 hover:bg-slate-700"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ),
-                )}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`w-8 h-8 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  currentPage === page
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                    : "bg-slate-800 border border-white/[0.04] text-slate-400 hover:text-slate-200 hover:bg-slate-700"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
 
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 border border-white/[0.04] text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 border border-white/[0.04] text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
+
+      <InvoiceModal
+        isOpen={isInvoiceOpen}
+        onClose={() => setIsInvoiceOpen(false)}
+        transaction={selectedTx}
+      />
     </div>
   );
 }

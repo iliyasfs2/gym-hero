@@ -50,7 +50,6 @@ export default function MembersPage() {
   const [selectedFilter, setSelectedFilter] = useState<FilterStatus>("All");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
- 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -61,7 +60,6 @@ export default function MembersPage() {
 
   const { addMember } = useApp();
   const [members, setMembers] = useState<Member[]>(MOCK_MEMBERS);
-
 
   const filteredMembers: Member[] = members.filter(
     (member: Member): boolean => {
@@ -76,7 +74,6 @@ export default function MembersPage() {
     },
   );
 
- 
   const handleSaveMember = (data: NewMemberFormData): void => {
     let price = 50;
     if (data.plan.includes("Standard")) price = 100;
@@ -97,7 +94,6 @@ export default function MembersPage() {
     setIsModalOpen(false);
   };
 
-  
   const handleConfirmDelete = () => {
     if (selectedDeleteId) {
       setMembers((prev) => prev.filter((m) => m.id !== selectedDeleteId));
@@ -106,7 +102,6 @@ export default function MembersPage() {
     }
   };
 
- 
   const handleUpdateMember = (data: NewMemberFormData) => {
     if (editingMember) {
       setMembers((prev) =>
@@ -129,17 +124,17 @@ export default function MembersPage() {
 
   return (
     <GlowLayout>
-      <div className="flex min-h-screen bg-[#0a0f1d] text-white w-full">
+      <div className="flex h-screen w-full bg-[#0b1224] text-white overflow-hidden">
         <Sidebar />
 
-        <main className="flex-1 p-8 overflow-y-auto z-10">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 w-full">
+        <main className="flex-1 h-full bg-[#0b1224] p-4 md:p-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
+          <div className="w-full mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-white/[0.02] pb-5">
               <div>
-                <h1 className="text-2xl font-bold text-slate-200">
+                <h1 className="text-2xl font-bold text-slate-200 tracking-tight">
                   Gym Members
                 </h1>
-                <p className="text-sm text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   Manage, search, and filter registered athletes
                 </p>
               </div>
@@ -202,7 +197,6 @@ export default function MembersPage() {
         />
       )}
 
-      
       <MemberViewDrawer
         member={viewingMember}
         onClose={() => setViewingMember(null)}

@@ -3,54 +3,76 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LayoutDashboard, Users, CreditCard } from "lucide-react";
+
+const menuItems = [
+  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Members", href: "/members", icon: Users },
+  { name: "Payments", href: "/payments", icon: CreditCard },
+];
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="glass-card-fixed w-[280px] min-h-screen flex flex-col p-6 z-20 rounded-none border-y-0 border-r border-l-0">
-      <div className="h-12 w-full bg-white/[0.04] rounded-xl mb-8 flex items-center px-4 border border-white/[0.05]">
-        <span className="text-lg mr-2">📊</span>
-        <span className="font-bold text-white/90">Gym Hero Admin</span>
+    <aside className="hidden md:flex flex-col h-screen bg-[#121824] border-r border-white/[0.04] text-slate-400 sticky top-0 left-0 z-40 transition-all duration-300 ease-in-out w-20 hover:w-64 group shadow-xl">
+      <div className="h-20 flex items-center px-6 border-b border-white/[0.04] overflow-hidden whitespace-nowrap">
+        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base shrink-0 shadow-md shadow-blue-600/20">
+          G
+        </div>
+        <span className="ml-4 text-white font-bold text-sm tracking-tight opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          Gym Hero Admin
+        </span>
       </div>
 
-      <nav className="space-y-3 flex-1">
-        <Link
-          href="/"
-          className={`flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ${
-            pathname === "/"
-              ? "bg-white/[0.08] border-white/[0.1] text-white font-semibold"
-              : "border-transparent text-slate-400 hover:bg-white/[0.04] hover:text-white"
-          }`}
-        >
-          <span className="ml-3 text-base">🏠</span>
-          <span className="text-sm">Dashboard</span>
-        </Link>
+      <nav className="flex-1 p-4 space-y-2">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
 
-        <Link
-          href="/members"
-          className={`flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ${
-            pathname === "/members"
-              ? "bg-white/[0.08] border-white/[0.1] text-white font-semibold"
-              : "border-transparent text-slate-400 hover:bg-white/[0.04] hover:text-white"
-          }`}
-        >
-          <span className="ml-3 text-base">👥</span>
-          <span className="text-sm">Members</span>
-        </Link>
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center h-12 px-3 rounded-xl transition-all duration-200 overflow-hidden whitespace-nowrap group/item relative ${
+                isActive
+                  ? "bg-white/[0.06] text-white font-semibold shadow-inner"
+                  : "hover:bg-white/[0.02] hover:text-slate-200"
+              }`}
+            >
+              <div
+                className={`w-6 h-6 flex items-center justify-center shrink-0 transition-colors ${
+                  isActive
+                    ? "text-blue-500"
+                    : "text-slate-400 group-hover/item:text-slate-200"
+                }`}
+              >
+                <Icon size={20} strokeWidth={2} />
+              </div>
 
-        <Link
-          href="/payments"
-          className={`flex items-center px-4 py-3 rounded-xl border transition-all cursor-pointer ${
-            pathname === "/payments"
-              ? "bg-white/[0.08] border-white/[0.1] text-white font-semibold"
-              : "border-transparent text-slate-400 hover:bg-white/[0.04] hover:text-white"
-          }`}
-        >
-          <span className="ml-3 text-base">💳</span>
-          <span className="text-sm">Payments</span>
-        </Link>
+              <span className="ml-4 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {item.name}
+              </span>
+
+              {isActive && (
+                <div className="absolute left-0 w-1 h-5 bg-blue-500 rounded-r-full" />
+              )}
+            </Link>
+          );
+        })}
       </nav>
+
+      <div className="p-4 border-t border-white/[0.04] overflow-hidden whitespace-nowrap">
+        <div className="flex items-center px-2 py-1">
+          <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/[0.06] flex items-center justify-center text-xs font-bold text-slate-300 shrink-0">
+            AD
+          </div>
+          <div className="ml-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <p className="text-xs font-semibold text-slate-300">Admin</p>
+            <p className="text-[10px] text-slate-500">View Only</p>
+          </div>
+        </div>
+      </div>
     </aside>
   );
 }
