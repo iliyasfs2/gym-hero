@@ -3,12 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, CreditCard } from "lucide-react";
+import { LayoutDashboard, Users, CreditCard, CalendarPlus } from "lucide-react";
 
 const menuItems = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Members", href: "/members", icon: Users },
   { name: "Payments", href: "/payments", icon: CreditCard },
+  { name: "Subscriptions", href: "/subscriptions", icon: CalendarPlus },
 ];
 
 export default function Sidebar() {
