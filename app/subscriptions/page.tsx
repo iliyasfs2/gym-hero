@@ -1,56 +1,52 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
+import Link from "next/link";
 import Sidebar from "@/app/components/Sidebar";
 import GlowLayout from "@/app/components/GlowLayout";
-import EditSubscriptions from "./components/Edit&deleteModal";
-
-interface SubscriptionPlan {
-  id: string;
-  name: string;
-  price: number;
-  duration: string;
-  activeMembers: number;
-  colorClass: string;
-}
+import AddPlanModal from "./components/AddPlanModal";
+import { SubscriptionPlan } from "@/app/subscriptions/types";
 
 const MOCK_PLANS: SubscriptionPlan[] = [
   {
     id: "1",
-    name: "Basic",
+    name: "Gold Plan",
     price: 150,
     duration: "1 Month",
     activeMembers: 24,
-
-    colorClass: "border-t-amber-500/40 hover:border-amber-500/30",
+    status: "Active",
   },
   {
     id: "2",
-    name: "Standard",
+    name: "Silver Plan",
     price: 100,
     duration: "1 Month",
     activeMembers: 12,
-
-    colorClass: "border-t-slate-400/40 hover:border-slate-400/30",
+    status: "Active",
   },
   {
     id: "3",
-    name: "Premium",
+    name: "Bronze Plan",
     price: 50,
     duration: "1 Month",
     activeMembers: 8,
-    colorClass: "border-t-amber-700/40 hover:border-amber-700/30",
+    status: "Inactive",
   },
 ];
-export default function Subscriptionspage() {
-  const [plans, setPlans] = useState<SubscriptionPlan[]>(MOCK_PLANS);
-const [isModalOpen, setIsModalOpen] = useState(false);
+
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function SubscriptionsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const activeModal = params.modal;
+
   return (
     <GlowLayout>
       <div className="flex h-screen w-full bg-[#0b1224] text-white overflow-hidden">
         <Sidebar />
-        <main className="flex-1 h-full bg-[#0b1224] p-4 md:p-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
-          <div className="w-full mx-auto">
+
+        <main className="flex-1 h-full bg-[#0b1224] p-4 md:p-8 space-y-6 overflow-y-auto z-10">
+          <div className="w-full max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-white/[0.02] pb-5">
               <div>
                 <h1 className="text-2xl font-bold text-slate-200 tracking-tight">
@@ -61,22 +57,34 @@ const [isModalOpen, setIsModalOpen] = useState(false);
                 </p>
               </div>
 
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-lg shadow-blue-600/20 flex items-center gap-2 active:scale-95">
+              <Link
+                href="?modal=add-plan"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2 active:scale-95"
+              >
                 <span>+</span>
                 <span>Add New Plan</span>
-              </button>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {plans.map((plan) => (
+              {MOCK_PLANS.map((plan) => (
                 <div
                   key={plan.id}
-                  className={`bg-[#121824]/90 backdrop-blur-xl rounded-2xl p-6 border border-white/[0.04] border-t-2 ${plan.colorClass} shadow-2xl transition-all duration-300 hover:scale-[1.02] flex flex-col justify-between min-h-[290px]`}
+                  className="bg-[#121824]/90 backdrop-blur-xl rounded-2xl p-6 border border-white/[0.04] shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-blue-500/20 flex flex-col justify-between min-h-[290px]"
                 >
                   <div>
                     <div className="flex justify-between items-center mb-5">
                       <span className="text-sm font-bold text-slate-200 tracking-wide">
                         🏷️ {plan.name}
+                      </span>
+                      <span
+                        className={`text-[11px] px-2.5 py-1 rounded-full font-medium border ${
+                          plan.status === "Active"
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                            : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                        }`}
+                      >
+                        ● {plan.status}
                       </span>
                     </div>
 
@@ -103,22 +111,27 @@ const [isModalOpen, setIsModalOpen] = useState(false);
                       </div>
                     </div>
                   </div>
+
                   <div className="flex gap-2.5 border-t border-white/[0.04] pt-4 mt-2">
-                    <button
-                      onClick={() => setIsModalOpen(true)}
-                      className="flex-1 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 py-2.5 rounded-xl border border-white/[0.06] font-medium transition-all cursor-pointer active:scale-95"
+                    <Link
+                      href={`?modal=edit-plan&id=${plan.id}`}
+                      className="flex-1 bg-slate-800 hover:bg-slate-700 text-center text-xs text-slate-300 py-2.5 rounded-xl border border-white/[0.06] font-medium transition-all active:scale-95"
                     >
                       ✏️ Edit
-                    </button>
-                    <button className="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-xs text-rose-400 py-2.5 rounded-xl border border-rose-500/20 font-medium transition-all cursor-pointer active:scale-95">
+                    </Link>
+                    <Link
+                      href={`?modal=delete-plan&id=${plan.id}`}
+                      className="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-center text-xs text-rose-400 py-2.5 rounded-xl border border-rose-500/20 font-medium transition-all active:scale-95"
+                    >
                       🗑️ Delete
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}
             </div>
+           
+            <AddPlanModal isOpen={activeModal === "add-plan"} />
           </div>
-              <EditSubscriptions isModalOpen={isModalOpen} />
         </main>
       </div>
     </GlowLayout>
