@@ -8,15 +8,14 @@ interface AddPlanModalProps {
   isOpen: boolean;
 }
 
-interface AddPlanModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
-  const [status, setStatus] = useState<"Active" | "Inactive">("Active");
-  const [mounted, setMounted] = useState(false);
+export default function AddPlanModal({ isOpen }: AddPlanModalProps) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [duration, setDuration] = useState("");
+  const [status, setStatus] = useState<"Active" | "Inactive">("Active");
 
   useEffect(() => {
     setMounted(true);
@@ -27,14 +26,28 @@ export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
 
   const handleClose = () => {
     router.push("/subscriptions");
-    
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const newPlan = {
+      name,
+      price: Number(price),
+      duration,
+      status,
+    };
+
+    console.log("New Gym Plan Data:", newPlan);
+
+    handleClose();
   };
 
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-hidden">
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm w-full h-full"
-        onClick={onClose}
+        onClick={handleClose}
       />
 
       <div className="relative w-full max-w-[480px] bg-[#0c0f17]/40 backdrop-blur-2xl border border-white/[0.05] rounded-3xl p-8 shadow-2xl z-10 text-slate-200 animate-in fade-in zoom-in-95 duration-150">
@@ -47,15 +60,19 @@ export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
           </p>
         </div>
 
-        <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-2">
-              Full Name
+              Plan Name
             </label>
             <input
               type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Diamond Elite"
               className="w-full bg-black/20 border border-white/[0.04] rounded-xl px-4 py-3.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
+              required
             />
           </div>
 
@@ -70,8 +87,11 @@ export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
                 </span>
                 <input
                   type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
                   placeholder="150"
                   className="w-full bg-black/20 border border-white/[0.04] rounded-xl pl-8 pr-4 py-3.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
+                  required
                 />
               </div>
             </div>
@@ -82,18 +102,20 @@ export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
               </label>
               <input
                 type="text"
-                placeholder="6 Months"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
                 className="w-full bg-black/20 border border-white/[0.04] rounded-xl px-4 py-3.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
+                required
               />
             </div>
           </div>
 
+         
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-2">
               Membership Plan
             </label>
             <div className="space-y-3">
-        
               <div
                 onClick={() => setStatus("Active")}
                 className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
@@ -128,7 +150,6 @@ export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
                 </div>
               </div>
 
-            
               <div
                 onClick={() => setStatus("Inactive")}
                 className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
@@ -168,14 +189,14 @@ export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
           <div className="flex justify-end items-center gap-5 pt-4 mt-6">
             <button
               type="button"
-              onClick={handleClose} 
+              onClick={handleClose}
               className="text-slate-400 hover:text-white text-sm font-medium transition-all cursor-pointer"
             >
               Cancel
             </button>
+
             <button
               type="submit"
-              onClick={handleClose} 
               className="bg-[#1b63ff] hover:bg-blue-600 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer"
             >
               Save

@@ -4,33 +4,7 @@ import Sidebar from "@/app/components/Sidebar";
 import GlowLayout from "@/app/components/GlowLayout";
 import AddPlanModal from "./components/AddPlanModal";
 import { SubscriptionPlan } from "@/app/subscriptions/types";
-
-const MOCK_PLANS: SubscriptionPlan[] = [
-  {
-    id: "1",
-    name: "Gold Plan",
-    price: 150,
-    duration: "1 Month",
-    activeMembers: 24,
-    status: "Active",
-  },
-  {
-    id: "2",
-    name: "Silver Plan",
-    price: 100,
-    duration: "1 Month",
-    activeMembers: 12,
-    status: "Active",
-  },
-  {
-    id: "3",
-    name: "Bronze Plan",
-    price: 50,
-    duration: "1 Month",
-    activeMembers: 8,
-    status: "Inactive",
-  },
-];
+import { MOCK_PLANS } from "@/app/subscriptions/mockData";
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -129,7 +103,7 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
                 </div>
               ))}
             </div>
-           
+
             <AddPlanModal isOpen={activeModal === "add-plan"} />
           </div>
         </main>
