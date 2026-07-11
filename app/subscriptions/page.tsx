@@ -13,7 +13,7 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const activeModal = params.modal;
 
-  // Fetch real-time plans from Supabase
+  
   const supabase = await createClient();
   const { data: plans } = await supabase
     .from("plans")

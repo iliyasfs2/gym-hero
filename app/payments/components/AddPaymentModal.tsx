@@ -1,42 +1,44 @@
 "use client";
 
+import { addPaymentAction } from "../actions/actions";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PaymentStatus, Transaction } from "./types";
 
 interface AddPaymentModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  onAdd: (payment: Omit<Transaction, "id" | "date" | "invoiceNo">) => void;
+  onClose?: () => void;
 }
 
-export default function AddPaymentModal({
-  isOpen,
-  onClose,
-  onAdd,
-}: AddPaymentModalProps) {
-  const [memberName, setMemberName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState<"Online" | "Card" | "Cash">("Online");
-  const [status, setStatus] = useState<PaymentStatus>("Paid");
+export default function AddPaymentModal({ isOpen }: AddPaymentModalProps) {
+  const router = useRouter();
+
+ 
+  const [form, setForm] = useState({
+    memberName: "",
+    amount: "",
+    method: "Online" as "Online" | "Card" | "Cash",
+    status: "Paid" as PaymentStatus,
+  });
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!memberName || !amount) return;
+    if (!form.memberName || !form.amount) return;
 
-    onAdd({
-      memberName,
-      amount: Number(amount),
-      method,
-      status,
-    });
+   
+    const formData = new FormData();
+    formData.append("memberName", form.memberName);
+    formData.append("amount", form.amount);
+    formData.append("method", form.method);
+    formData.append("status", form.status);
 
-    setMemberName("");
-    setAmount("");
-    setMethod("Online");
-    setStatus("Paid");
-    onClose();
+    await addPaymentAction(formData);
+
+    
+    setForm({ memberName: "", amount: "", method: "Online", status: "Paid" });
+    router.push("/payments");
   };
 
   const methodOptions = [
@@ -85,7 +87,7 @@ export default function AddPaymentModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={() => router.push("/payments")}
       />
 
       <div className="bg-[#121824] border border-white/[0.08] w-full max-w-lg rounded-2xl p-6 shadow-2xl relative z-10 animate-in fade-in zoom-in-95 duration-200 text-left">
@@ -105,8 +107,8 @@ export default function AddPaymentModal({
               type="text"
               required
               placeholder="e.g. John Doe"
-              value={memberName}
-              onChange={(e) => setMemberName(e.target.value)}
+              value={form.memberName}
+              onChange={(e) => setForm({ ...form, memberName: e.target.value })}
               className="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
             />
           </div>
@@ -119,8 +121,8 @@ export default function AddPaymentModal({
               type="number"
               required
               placeholder="e.g. 150"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              value={form.amount}
+              onChange={(e) => setForm({ ...form, amount: e.target.value })}
               className="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
             />
           </div>
@@ -131,11 +133,11 @@ export default function AddPaymentModal({
             </label>
             <div className="space-y-2.5">
               {methodOptions.map((option) => {
-                const isSelected = method === option.id;
+                const isSelected = form.method === option.id;
                 return (
                   <div
                     key={option.id}
-                    onClick={() => setMethod(option.id)}
+                    onClick={() => setForm({ ...form, method: option.id })}
                     className={`flex items-center justify-between p-3.5 rounded-xl border transition-all cursor-pointer ${
                       isSelected
                         ? "bg-blue-600/10 border-blue-500/80 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
@@ -184,8 +186,8 @@ export default function AddPaymentModal({
                     type="radio"
                     name="paymentStatus"
                     value={opt.id}
-                    checked={status === opt.id}
-                    onChange={() => setStatus(opt.id)}
+                    checked={form.status === opt.id}
+                    onChange={() => setForm({ ...form, status: opt.id })}
                     className="sr-only peer"
                   />
                   <div
@@ -205,7 +207,7 @@ export default function AddPaymentModal({
           <div className="flex justify-end items-center gap-4 pt-4 border-t border-white/[0.04] mt-6">
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => router.push("/payments")}
               className="text-sm font-semibold text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
             >
               Cancel

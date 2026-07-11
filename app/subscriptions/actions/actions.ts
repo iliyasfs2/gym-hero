@@ -17,11 +17,8 @@ export async function addPlanAction(formData: FormData) {
     .insert([{ name, price, duration, status }]);
 
   if (error) {
-    console.error("Supabase Error ❌:", error.message);
     return;
   }
-
-  console.log("Plan added successfully to Supabase 🎉");
 
   revalidatePath("/subscriptions");
 
