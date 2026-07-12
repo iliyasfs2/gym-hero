@@ -5,22 +5,26 @@ import { NewMemberFormData } from "./types";
 import { Member } from "@/app/components/context/AppContext";
 
 interface AddMemberModalProps {
+  initialData?: any;
+  availablePlans: { id: string; name: string; price: number }[];
   onClose: () => void;
-  onSave: (formData: NewMemberFormData) => void;
-  initialData?: Member | null;
+  onSave: (data: any) => void;
 }
 
 export default function AddMemberModal({
+  initialData,
+  availablePlans,
   onClose,
   onSave,
-  initialData,
 }: AddMemberModalProps) {
   const todayString = new Date().toISOString().split("T")[0];
+
+  const defaultPlan = availablePlans.length > 0 ? availablePlans[0].name : "";
 
   const [formData, setFormData] = useState<NewMemberFormData>({
     name: initialData ? initialData.name : "",
     phone: initialData ? initialData.phone : "",
-    plan: initialData ? initialData.plan : "Basic (1 Month)",
+    plan: initialData ? initialData.plan : defaultPlan,
     startDate: initialData ? initialData.joinDate : todayString,
   });
 
@@ -30,7 +34,7 @@ export default function AddMemberModal({
     setFormData({
       name: "",
       phone: "",
-      plan: "Basic (1 Month)",
+      plan: defaultPlan,
       startDate: todayString,
     });
   };
@@ -69,7 +73,7 @@ export default function AddMemberModal({
               Phone Number
             </label>
             <input
-              type="tel"
+              type="text"
               placeholder="09123456789"
               value={formData.phone}
               onChange={(e) =>
@@ -84,71 +88,59 @@ export default function AddMemberModal({
             <label className="block text-xs font-medium text-slate-400 mb-2">
               Membership Plan
             </label>
-            <div className="grid grid-cols-1 gap-3">
-              {[
-                {
-                  id: "Basic (1 Month)",
-                  name: "Basic",
-                  time: "1 Month",
-                  price: "$50",
-                  icon: "🏋️‍♂️",
-                },
-                {
-                  id: "Standard (3 Months)",
-                  name: "Standard",
-                  time: "3 Months",
-                  price: "$100",
-                  icon: "⚡",
-                },
-                {
-                  id: "Premium (6 Months)",
-                  name: "Premium",
-                  time: "6 Months",
-                  price: "$150",
-                  icon: "👑",
-                },
-              ].map((planItem) => {
-                const isSelected = formData.plan === planItem.id;
-                return (
-                  <div
-                    key={planItem.id}
-                    onClick={() =>
-                      setFormData({ ...formData, plan: planItem.id })
-                    }
-                    className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all duration-200 bg-black/30 ${
-                      isSelected
-                        ? "border-blue-500 bg-blue-500/5 shadow-lg shadow-blue-500/5"
-                        : "border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.02]"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl bg-white/[0.03] p-2 rounded-lg border border-white/[0.05]">
-                        {planItem.icon}
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold text-slate-200">
-                          {planItem.name}
-                        </p>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          {planItem.time}
-                        </p>
+            <div className="grid grid-cols-1 gap-3 max-h-[220px] overflow-y-auto pr-1">
+              {availablePlans.length === 0 ? (
+                <p className="text-xs text-slate-500 text-center py-4">
+                  No plans available.
+                </p>
+              ) : (
+                availablePlans.map((planItem) => {
+                  const isSelected = formData.plan === planItem.name;
+                  return (
+                    <div
+                      key={planItem.id}
+                      onClick={() =>
+                        setFormData({ ...formData, plan: planItem.name })
+                      }
+                      className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all duration-200 bg-black/30 ${
+                        isSelected
+                          ? "border-blue-500 bg-blue-500/5 shadow-lg shadow-blue-500/5"
+                          : "border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.02]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl bg-white/[0.03] p-2 rounded-lg border border-white/[0.05]">
+                          🏋️‍♂️
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-200">
+                            {planItem.name}
+                          </p>
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            Active Subscription Plan
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-mono font-bold text-blue-400">
+                          ${planItem.price}
+                        </span>
+                        <div
+                          className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                            isSelected
+                              ? "border-blue-500 bg-blue-500"
+                              : "border-slate-600"
+                          }`}
+                        >
+                          {isSelected && (
+                            <span className="text-[9px] text-white">✓</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-mono font-bold text-blue-400">
-                        {planItem.price}
-                      </span>
-                      <div
-                        className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${isSelected ? "border-blue-500 bg-blue-500" : "border-slate-600"}`}
-                      >
-                        {isSelected && (
-                          <span className="text-[9px] text-white">✓</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
 
