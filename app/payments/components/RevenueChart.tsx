@@ -23,17 +23,17 @@ export default function RevenueChart({
   setTimeFrame,
   transactions,
 }: RevenueChartProps) {
-  // ۱. فیلتر تراکنش‌های موفق با دسترسی امن و منعطف به فیلد تاریخ (Any-Casting موقت برای حل خط قرمز)
+  
   const paidTransactions = useMemo(() => {
     return (transactions || []).filter((tx: any) => {
       const isPaid = tx.status?.toLowerCase() === "paid";
-      // بررسی اینکه فیلد تاریخ چه با نام created_at و چه با نام‌های دیگر وجود داشته باشد
+    
       const hasDate = tx.created_at || tx.date || tx.timestamp;
       return isPaid && hasDate;
     });
   }, [transactions]);
 
-  // ۲. پردازش حرفه‌ای دیتای زنده بر روی ساختار فیک پروژه
+  
   const chartData = useMemo(() => {
     const now = new Date();
     const currentUTCString = now.toISOString();
@@ -58,7 +58,7 @@ export default function RevenueChart({
         ];
 
         paidTransactions.forEach((tx: any) => {
-          // گرفتن تاریخ از هر فیلد ممکنی که سوپابیس فرستاده
+         
           const rawDate = tx.created_at || tx.date || tx.timestamp;
           if (!rawDate) return;
 
