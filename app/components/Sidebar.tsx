@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, Users, CreditCard, CalendarPlus } from "lucide-react";
 
 const menuItems = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Members", href: "/members", icon: Users },
   { name: "Payments", href: "/payments", icon: CreditCard },
   { name: "Subscriptions", href: "/subscriptions", icon: CalendarPlus },

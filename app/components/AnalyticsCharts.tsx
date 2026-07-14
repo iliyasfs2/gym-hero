@@ -13,28 +13,21 @@ import {
   Bar,
 } from "recharts";
 
-
 export interface ChartDataPoint {
   month: string;
   revenue: number;
   registrations: number;
 }
 
+interface AnalyticsChartsProps {
+  data: ChartDataPoint[];
+}
 
-const monthlyAnalyticsData: ChartDataPoint[] = [
-  { month: "Jan", revenue: 1200, registrations: 12 },
-  { month: "Feb", revenue: 1900, registrations: 18 },
-  { month: "Mar", revenue: 3200, registrations: 26 },
-  { month: "Apr", revenue: 2800, registrations: 20 },
-  { month: "May", revenue: 4100, registrations: 35 },
-  { month: "Jun", revenue: 5300, registrations: 42 },
-];
-
-export default function AnalyticsCharts(): JSX.Element {
-
+export default function AnalyticsCharts({
+  data,
+}: AnalyticsChartsProps): JSX.Element {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    
       <div className="glass-card-fixed p-6 rounded-2xl shadow-xl border border-white/[0.04]">
         <div className="mb-4">
           <h3 className="text-base font-semibold text-slate-200">
@@ -48,7 +41,7 @@ export default function AnalyticsCharts(): JSX.Element {
         <div className="h-[260px] w-full text-xs font-mono">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
-              data={monthlyAnalyticsData}
+              data={data}
               margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
             >
               <defs>
@@ -86,7 +79,6 @@ export default function AnalyticsCharts(): JSX.Element {
         </div>
       </div>
 
-     
       <div className="glass-card-fixed p-6 rounded-2xl shadow-xl border border-white/[0.04]">
         <div className="mb-4">
           <h3 className="text-base font-semibold text-slate-200">
@@ -100,7 +92,7 @@ export default function AnalyticsCharts(): JSX.Element {
         <div className="h-[260px] w-full text-xs font-mono">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={monthlyAnalyticsData}
+              data={data}
               margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
             >
               <CartesianGrid
