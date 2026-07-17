@@ -28,6 +28,7 @@ export default function AnalyticsCharts({
 }: AnalyticsChartsProps): JSX.Element {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {/* چارت اول: درآمد ماهیانه (مستقل) */}
       <div className="glass-card-fixed p-6 rounded-2xl shadow-xl border border-white/[0.04]">
         <div className="mb-4">
           <h3 className="text-base font-semibold text-slate-200">
@@ -56,7 +57,13 @@ export default function AnalyticsCharts({
                 vertical={false}
               />
               <XAxis dataKey="month" stroke="#64748b" tickLine={false} />
-              <YAxis stroke="#64748b" tickLine={false} axisLine={false} />
+              {/* فرمت‌دهی محور عمودی برای نشان دادن مبالغ به دلار */}
+              <YAxis
+                stroke="#64748b"
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${value}`}
+              />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "#0f172a",
@@ -65,6 +72,10 @@ export default function AnalyticsCharts({
                   color: "#fff",
                 }}
                 itemStyle={{ color: "#60a5fa" }}
+                formatter={(value: number) => [
+                  `$${value.toLocaleString()}`,
+                  "Revenue",
+                ]}
               />
               <Area
                 type="monotone"
@@ -79,6 +90,7 @@ export default function AnalyticsCharts({
         </div>
       </div>
 
+      {/* چارت دوم: ثبت‌نام‌های ماهیانه (مستقل) */}
       <div className="glass-card-fixed p-6 rounded-2xl shadow-xl border border-white/[0.04]">
         <div className="mb-4">
           <h3 className="text-base font-semibold text-slate-200">
@@ -101,6 +113,7 @@ export default function AnalyticsCharts({
                 vertical={false}
               />
               <XAxis dataKey="month" stroke="#64748b" tickLine={false} />
+              {/* محور عمودی برای ثبت‌نام‌ها فقط عدد خام را نشان می‌دهد */}
               <YAxis stroke="#64748b" tickLine={false} axisLine={false} />
               <Tooltip
                 contentStyle={{
@@ -110,6 +123,10 @@ export default function AnalyticsCharts({
                   color: "#fff",
                 }}
                 itemStyle={{ color: "#34d399" }}
+                formatter={(value: number) => [
+                  `${value} athletes`,
+                  "Registrations",
+                ]}
               />
               <Bar
                 dataKey="registrations"

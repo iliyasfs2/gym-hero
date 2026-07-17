@@ -11,6 +11,7 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.2",
+    "axios": "^1.18.1",
     "lucide-react": "^1.23.0",
     "next": "16.2.9",
     "react": "19.2.4",
