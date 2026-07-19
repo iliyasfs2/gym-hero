@@ -3,7 +3,7 @@ import Link from "next/link";
 import Sidebar from "@/app/components/Sidebar";
 import GlowLayout from "@/app/components/GlowLayout";
 import AddPlanModal from "./components/AddPlanModal";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/public/supabase/server";
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -13,7 +13,6 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const activeModal = params.modal;
 
-  
   const supabase = await createClient();
   const { data: plans } = await supabase
     .from("plans")
