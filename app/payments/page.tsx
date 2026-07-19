@@ -4,7 +4,7 @@ import TransactionTable from "./components/PaymentTable";
 import AddPaymentModalWrapper from "./components/AddPaymentModal";
 import { Transaction } from "./components/types";
 import Sidebar from "@/app/components/Sidebar";
-import { createClient } from "@/public/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function PaymentsPage({
   searchParams,

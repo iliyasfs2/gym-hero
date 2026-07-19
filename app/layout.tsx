@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import { AppProvider } from "./components/context/AppContext";
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "GymHero Admin",
-  description: "Gym Management System",
+  title: "Gym Hero",
+  description: "Manage your gym athletes easily",
 };
 
 export default function RootLayout({
@@ -15,9 +12,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <AppProvider>{children}</AppProvider>
+    <html lang="fa" dir="rtl">
+      <body className="antialiased font-sans bg-slate-950 text-slate-50">
+        {children}
       </body>
     </html>
   );

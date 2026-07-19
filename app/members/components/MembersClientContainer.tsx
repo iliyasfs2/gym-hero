@@ -58,7 +58,7 @@ export default function MembersClientContainer({
     const selectedPlan = availablePlans.find((p) => p.name === data.plan);
     const price = selectedPlan ? selectedPlan.price : 0;
 
-    const { createClient } = await import("@/public/supabase/clinet");
+    const { createClient } = await import("@/utils/supabase/clinet");
     const supabase = createClient();
 
     const { data: insertedMember, error } = await supabase
@@ -104,7 +104,7 @@ export default function MembersClientContainer({
 
   const handleConfirmDelete = async () => {
     if (selectedDeleteId) {
-      const { createClient } = await import("@/public/supabase/clinet");
+      const { createClient } = await import("@/utils/supabase/clinet");
       const supabase = createClient();
 
       const { error } = await supabase
@@ -128,7 +128,7 @@ export default function MembersClientContainer({
       const selectedPlan = availablePlans.find((p) => p.name === data.plan);
       const price = selectedPlan ? selectedPlan.price : 0;
 
-      const { createClient } = await import("@/public/supabase/clinet");
+      const { createClient } = await import("@/utils/supabase/clinet");
       const supabase = createClient();
 
       const { error } = await supabase

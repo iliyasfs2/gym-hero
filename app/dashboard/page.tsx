@@ -1,4 +1,4 @@
-import { createClient } from "@/public/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import AdminDashboard from "@/app/AdminDashboard";
 
 export const dynamic = "force-dynamic";

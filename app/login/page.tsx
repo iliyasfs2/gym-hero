@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signInAction, signUpAction } from "@/public/supabase/auth-actions";
+import { signInAction, signUpAction } from "@/utils/supabase/auth-actions";
 
 export default function LoginPage() {
   const router = useRouter();

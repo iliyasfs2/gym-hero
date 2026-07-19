@@ -1,4 +1,4 @@
-import { createClient } from "@/public/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import MembersClientContainer from "./components/MembersClientContainer";
 import { Member } from "@/app/components/context/AppContext";
 

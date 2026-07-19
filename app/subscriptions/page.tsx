@@ -3,7 +3,7 @@ import Link from "next/link";
 import Sidebar from "@/app/components/Sidebar";
 import GlowLayout from "@/app/components/GlowLayout";
 import AddPlanModal from "./components/AddPlanModal";
-import { createClient } from "@/public/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
