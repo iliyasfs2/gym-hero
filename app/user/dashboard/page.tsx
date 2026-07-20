@@ -1,7 +1,7 @@
 import React from "react";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import DashboardOverview from "./DashboardOverview";
+import DashboardOverview from "@/app/user/dashboard/components/DashboardOverview";
 
 export default async function UserPage() {
   const supabase = await createClient();
