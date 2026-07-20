@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import MembersClientContainer from "./components/MembersClientContainer";
-import { Member } from "@/app/components/context/AppContext";
+import { Member, AppProvider } from "@/app/components/context/AppContext";
 
 export default async function MembersPage() {
   const supabase = await createClient();
@@ -41,9 +41,11 @@ export default async function MembersPage() {
   const availablePlans = subscriptionsResult.data || [];
 
   return (
-    <MembersClientContainer
-      initialMembers={formattedMembers}
-      availablePlans={availablePlans}
-    />
+    <AppProvider>
+      <MembersClientContainer
+        initialMembers={formattedMembers}
+        availablePlans={availablePlans}
+      />
+    </AppProvider>
   );
 }
