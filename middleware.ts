@@ -34,23 +34,43 @@ export async function middleware(request: NextRequest) {
   );
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const isDashboardPage = request.nextUrl.pathname.startsWith("/dashboard");
-  const isLoginPage = request.nextUrl.pathname.startsWith("/login");
+  const pathname = request.nextUrl.pathname;
+  const isLoginPage = pathname.startsWith("/login");
+  const isAdminRoute = pathname.startsWith("/dashboard");
+  const isUserRoute = pathname.startsWith("/user");
 
-  if (isDashboardPage && !session) {
+  if (!user && (isAdminRoute || isUserRoute)) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isLoginPage && session) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    const role = profile?.role || "user";
+
+    if (isLoginPage) {
+      if (role === "admin") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      } else {
+        return NextResponse.redirect(new URL("/user/dashboard", request.url));
+      }
+    }
+
+    if (isAdminRoute && role !== "admin") {
+      return NextResponse.redirect(new URL("/user/dashboard", request.url));
+    }
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login"],
+  matcher: ["/dashboard/:path*", "/user/:path*", "/login"],
 };
