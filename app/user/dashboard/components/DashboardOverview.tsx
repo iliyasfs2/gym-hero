@@ -24,7 +24,6 @@ export default function DashboardOverview({
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 font-sans p-4 md:p-8 flex flex-col items-center justify-center">
       <div className="w-full max-w-2xl">
-        {/* Header section with user email */}
         <div className="flex items-center justify-between mb-6 px-2">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-blue-500 animate-pulse"></span>
@@ -34,8 +33,7 @@ export default function DashboardOverview({
           </div>
           <span className="text-xs text-slate-400 font-mono">{email}</span>
         </div>
-
-        {/* Physical info and subscription card */}
+         
         <MemberCard
           fullName={profileData.full_name}
           planName={profileData.plan_name}
@@ -46,7 +44,6 @@ export default function DashboardOverview({
           purchaseDate={profileData.purchase_date}
         />
 
-        {/* Quick action navigation links */}
         <NavigationLinks />
       </div>
     </div>
