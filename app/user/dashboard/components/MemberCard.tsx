@@ -23,7 +23,6 @@ export function MemberCard({
     <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl shadow-blue-950/20">
       <div className="absolute top-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl"></div>
 
-      {/* Name and Subscription Status Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-6 mb-6">
         <div>
           <h2 className="text-2xl font-extrabold text-slate-100">{fullName}</h2>
@@ -44,7 +43,6 @@ export function MemberCard({
         </span>
       </div>
 
-      {/* Grid containing Physical and Plan details */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-slate-950/40 border border-slate-800/50 rounded-2xl p-4 flex flex-col justify-between">
           <span className="block text-xs text-slate-400 mb-1">Height</span>
