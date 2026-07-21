@@ -18,32 +18,28 @@ export function LoginForm() {
     setLoading(true);
     setMessage(null);
 
-    const formData = new FormData(e.currentTarget);
-    const result = isSignUp
-      ? await signUpAction(formData)
-      : await signInAction(formData);
+    const action = isSignUp ? signUpAction : signInAction;
+    const result = await action(new FormData(e.currentTarget));
 
     setLoading(false);
 
     if (!result.success) {
       setMessage({ type: "error", text: result.error || "An error occurred" });
+    } else if (isSignUp) {
+      setMessage({
+        type: "success",
+        text: result.message || "Registration successful.",
+      });
     } else {
-      if (isSignUp) {
-        setMessage({
-          type: "success",
-          text: result.message || "Registration successful.",
-        });
-      } else {
-        router.push("/user/dashboard");
-        router.refresh();
-      }
+      router.push("/user/dashboard");
+      router.refresh();
     }
   };
 
   return (
-    <div className="bg-slate-900/40 backdrop-blur-md w-full max-w-md rounded-2xl p-8 shadow-2xl border border-white/[0.08]">
+    <div className="bg-slate-900/40 backdrop-blur-md w-full max-w-md rounded-2xl p-8 border border-white/[0.08] shadow-2xl">
       <div className="mb-6 text-center">
-        <h3 className="text-2xl font-bold text-slate-100 tracking-wide">
+        <h3 className="text-2xl font-bold text-slate-100">
           {isSignUp ? "Create Account" : "Welcome Back"}
         </h3>
         <p className="text-xs text-slate-400 mt-2">
@@ -55,7 +51,7 @@ export function LoginForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1.5">
+          <label className="block text-xs text-slate-400 mb-1.5">
             Email Address
           </label>
           <input
@@ -68,7 +64,7 @@ export function LoginForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-400 mb-1.5">
+          <label className="block text-xs text-slate-400 mb-1.5">
             Password
           </label>
           <input
@@ -95,7 +91,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white py-3 rounded-xl text-sm font-medium transition-colors cursor-pointer shadow-lg shadow-blue-600/20 mt-2"
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl text-sm font-medium transition-colors shadow-lg shadow-blue-600/20 mt-2"
         >
           {loading ? "Processing..." : isSignUp ? "Sign Up" : "Sign In"}
         </button>
@@ -107,7 +103,7 @@ export function LoginForm() {
             setIsSignUp(!isSignUp);
             setMessage(null);
           }}
-          className="text-xs text-slate-400 hover:text-blue-400 transition-colors bg-transparent border-none cursor-pointer"
+          className="text-xs text-slate-400 hover:text-blue-400 transition-colors bg-transparent border-none"
         >
           {isSignUp
             ? "Already have an account? Sign In"
