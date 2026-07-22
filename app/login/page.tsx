@@ -11,21 +11,7 @@ export default async function LoginPage() {
   } = await supabase.auth.getUser();
 
   if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role, full_name, phone")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile?.full_name || !profile?.phone) {
-      redirect("/onboarding");
-    }
-
-    if (profile?.role === "admin") {
-      redirect("/dashboard");
-    } else {
-      redirect("/user/dashboard");
-    }
+    redirect("/user/dashboard");
   }
 
   return (
