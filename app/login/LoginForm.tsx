@@ -83,11 +83,9 @@ export function LoginForm() {
 
   return (
     <div className="relative w-full max-w-md flex flex-col items-center">
-      {/* Background Glows */}
       <div className="absolute -top-16 -left-16 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
-      {/* --- OUTSIDE STEPPER TRACK --- */}
       <div className="w-full flex items-center justify-center gap-3 mb-6 z-10">
         <motion.div
           animate={{
@@ -126,7 +124,6 @@ export function LoginForm() {
         </motion.div>
       </div>
 
-      {/* --- MAIN GLASS CONTAINER --- */}
       <div className="relative w-full h-[420px] bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden flex flex-col justify-between">
         {isCompleted ? (
           <motion.div
@@ -143,7 +140,6 @@ export function LoginForm() {
           </motion.div>
         ) : (
           <>
-            {/* Header / Brand Logo */}
             <div className="flex items-center justify-center pt-1">
               <span className="text-xl font-black tracking-wider uppercase">
                 <span className="text-white">GYM</span>
@@ -153,7 +149,6 @@ export function LoginForm() {
 
             <AnimatePresence mode="wait">
               {step === 1 ? (
-                /* STEP 1 */
                 <motion.div
                   key="step1"
                   initial={{ opacity: 0, x: -20 }}
@@ -197,7 +192,6 @@ export function LoginForm() {
                     </span>
                   </button>
 
-                  {/* Centered Divider */}
                   <div className="relative flex items-center justify-center my-3">
                     <div className="border-t border-white/10 w-full" />
                     <span className="bg-slate-900/90 px-3 text-[10px] uppercase font-semibold text-slate-500 tracking-widest absolute">
@@ -225,7 +219,6 @@ export function LoginForm() {
                   )}
                 </motion.div>
               ) : (
-                /* STEP 2 */
                 <motion.form
                   key="step2"
                   noValidate
