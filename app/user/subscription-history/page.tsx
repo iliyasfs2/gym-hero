@@ -1,54 +1,78 @@
-import React from "react";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { SubscriptionHistoryClient } from "@/app/user/subscription-history/components/SubscriptionHistoryClient";
 import { SubscriptionRecord } from "@/app/user/subscription-history/components/SubscriptionCard";
 
-async function getSubscriptions(): Promise<SubscriptionRecord[]> {
-  return [
-    {
-      id: "sub_1",
-      planName: "Pro Athlete Plan",
-      price: 49,
-      duration: "1 Month",
-      startDate: "2026-07-01",
-      endDate: "2026-08-01",
-      status: "Active",
-    },
-    {
-      id: "sub_2",
-      planName: "Starter Gym Pass",
-      price: 19,
-      duration: "1 Month",
-      startDate: "2026-05-15",
-      endDate: "2026-06-15",
-      status: "Expired",
-    },
-    {
-      id: "sub_3",
-      planName: "VIP Unlimited",
-      price: 120,
-      duration: "3 Months",
-      startDate: "2026-01-01",
-      endDate: "2026-04-01",
-      status: "Expired",
-    },
-  ];
-}
+export const revalidate = 0;
 
-export default async function SubscriptionHistoryPage() {
-  const subscriptions = await getSubscriptions();
+export default async function HistoryPage() {
+  const cookieStore = await cookies();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options),
+            );
+          } catch {}
+        },
+      },
+    },
+  );
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  const { data, error } = await supabase
+    .from("subscriptions")
+    .select("*")
+    .eq("user_id", session.user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching subscriptions:", error.message);
+  }
+
+  const now = new Date();
+
+  const formattedSubscriptions: SubscriptionRecord[] = (data || []).map(
+    (item) => {
+      const endDate = item.end_date ? new Date(item.end_date) : new Date();
+      const status = endDate > now ? "Active" : "Expired";
+
+      return {
+        id: item.id,
+        planName: item.name || "Plan",
+        price: Number(item.price || 0),
+        duration: item.duration || "1 Month",
+        startDate: item.start_date || item.created_at,
+        endDate: item.end_date || item.created_at,
+        status: status,
+      };
+    },
+  );
 
   return (
-    <main className="pt-2 pb-14 px-6 md:px-12 max-w-7xl mx-auto min-h-screen space-y-8">
-      <div>
-        <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-          Subscription History
-        </h1>
-        <p className="text-slate-400 text-sm mt-1">
-          Manage and review your active and past membership plans.
-        </p>
-      </div>
-
-      <SubscriptionHistoryClient initialSubscriptions={subscriptions} />
-    </main>
+    <div className="max-w-5xl mx-auto p-4 md:p-8">
+      <h1 className="text-2xl font-bold text-white mb-6">
+        Subscription History
+      </h1>
+      <SubscriptionHistoryClient
+        initialSubscriptions={formattedSubscriptions}
+      />
+    </div>
   );
 }
