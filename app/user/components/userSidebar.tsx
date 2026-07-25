@@ -14,8 +14,12 @@ import { createClient } from "@/utils/supabase/clinet";
 
 const menuItems = [
   { name: "Dashboard", href: "/user/dashboard", icon: LayoutDashboard },
-  { name: "Buy Subscription", href: "/user/subscribe", icon: ShoppingCart },
-  { name: "History", href: "/user/history", icon: History },
+  { name: "Buy Subscription", href: "/user/buy_subscribe", icon: ShoppingCart },
+  {
+    name: "Subscription History",
+    href: "/user/subscription-history",
+    icon: History,
+  },
   { name: "Profile", href: "/user/profile", icon: User },
 ];
 
