@@ -127,7 +127,6 @@ export function ProfileForm({
 
   return (
     <div className="w-full space-y-8">
-      {/* Notification Toast */}
       {status.type && (
         <div
           className={`p-5 rounded-2xl border flex items-center gap-3 text-base font-medium transition-all ${
@@ -145,7 +144,6 @@ export function ProfileForm({
         </div>
       )}
 
-      {/* ================= HERO PROFILE BANNER ================= */}
       <div className="relative overflow-hidden bg-[#111622] border border-white/[0.08] p-8 md:p-9 rounded-3xl shadow-xl">
         <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -212,10 +210,8 @@ export function ProfileForm({
         </div>
       </div>
 
-      {/* ================= EXACT DASHBOARD GRID ================= */}
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* CARD 1: ACCOUNT DETAILS */}
           <div className="bg-[#111622] border border-white/[0.08] p-8 rounded-3xl flex flex-col justify-between shadow-xl">
             <div className="space-y-5">
               <div className="flex items-center gap-4 pb-4 border-b border-white/[0.06]">
@@ -280,7 +276,6 @@ export function ProfileForm({
             </div>
           </div>
 
-          {/* CARD 2: BODY METRICS */}
           <div className="bg-[#111622] border border-white/[0.08] p-8 rounded-3xl flex flex-col justify-between shadow-xl">
             <div className="space-y-5">
               <div className="flex items-center gap-4 pb-4 border-b border-white/[0.06]">
@@ -367,7 +362,6 @@ export function ProfileForm({
             </div>
           </div>
 
-          {/* CARD 3: HEALTH & BMI SUMMARY */}
           <div className="bg-[#111622] border border-white/[0.08] p-8 rounded-3xl flex flex-col justify-between shadow-xl md:col-span-2 lg:col-span-1">
             <div className="space-y-5">
               <div className="flex items-center gap-4 pb-4 border-b border-white/[0.06]">
@@ -400,7 +394,6 @@ export function ProfileForm({
               </div>
             </div>
 
-            {/* Save Button */}
             {isEditing && (
               <button
                 type="submit"

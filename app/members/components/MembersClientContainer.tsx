@@ -170,14 +170,14 @@ export default function MembersClientContainer({
 
   return (
     <GlowLayout>
-      <div className="flex h-screen w-full bg-[#0b1224] text-white overflow-hidden">
+      <div className="flex h-screen w-full bg-[#11151f] text-white overflow-hidden">
         <Sidebar />
 
-        <main className="flex-1 h-full bg-[#0b1224] p-4 md:p-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
+        <main className="flex-1 h-full bg-[#11151f] p-4 md:p-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
           <div className="w-full mx-auto">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-white/[0.02] pb-5">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-white/[0.06] pb-5">
               <div>
-                <h1 className="text-2xl font-bold text-slate-200 tracking-tight">
+                <h1 className="text-2xl font-bold text-white tracking-tight">
                   Gym Members
                 </h1>
                 <p className="text-xs text-slate-400 mt-1">
@@ -186,9 +186,21 @@ export default function MembersClientContainer({
               </div>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-lg shadow-blue-600/20 flex items-center gap-2"
+                className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-lg shadow-sky-600/20 flex items-center gap-2"
               >
-                <span>+</span>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
                 <span>Add Member</span>
               </button>
             </div>

@@ -54,18 +54,31 @@ export default function TransactionTable({
   };
 
   return (
-    <div className="bg-[#121824] rounded-2xl border border-white/[0.04] p-6 shadow-xl w-full space-y-4">
+    <div className="bg-[#141822] rounded-2xl border border-white/[0.04] p-6 shadow-xl w-full space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h3 className="text-lg font-bold text-slate-200">
-            📋 Transaction Ledger
+          <h3 className="flex items-center gap-2 text-lg font-bold text-slate-200">
+          
+            Transaction Ledger
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">Recent Activities</p>
         </div>
 
         <div className="relative w-full sm:w-64">
-          <span className="absolute inset-y-0 left-3 flex items-center text-slate-500 text-sm">
-            🔍
+          <span className="absolute inset-y-0 left-3 flex items-center text-slate-500">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
           </span>
           <input
             type="text"

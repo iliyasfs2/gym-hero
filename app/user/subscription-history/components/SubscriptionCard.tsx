@@ -36,7 +36,6 @@ export function SubscriptionCard({
   onToggle,
 }: SubscriptionCardProps) {
   const isActive = subscription.status === "Active";
-
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateStr;
