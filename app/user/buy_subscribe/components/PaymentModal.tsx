@@ -39,17 +39,16 @@ export default function PaymentModal({
       fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify({ amount: Number(amount) }),
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.clientSecret) {
+          if (data?.clientSecret) {
             setClientSecret(data.clientSecret);
           }
           setLoading(false);
         })
-        .catch((err) => {
-          console.error("Payment setup error:", err);
+        .catch(() => {
           setLoading(false);
         });
     }
@@ -80,7 +79,7 @@ export default function PaymentModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-slate-950/60 backdrop-blur-md"
-          onClick={onClose}
+          onClick={() => onClose()}
         />
 
         <motion.div
@@ -91,7 +90,8 @@ export default function PaymentModal({
           className="relative w-full max-w-3xl overflow-hidden rounded-3xl border border-white/10 bg-slate-900/60 p-6 sm:p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] backdrop-blur-2xl z-10 flex flex-col md:flex-row gap-8 items-center"
         >
           <button
-            onClick={onClose}
+            type="button"
+            onClick={() => onClose()}
             className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all active:scale-90 z-20"
           >
             <X size={18} />
@@ -225,12 +225,12 @@ export default function PaymentModal({
                   >
                     <CustomCheckoutForm
                       amount={amount}
-                      onClose={onClose}
+                      onClose={() => onClose()}
                       onSuccess={handlePaymentSuccess}
-                      cardNumber={cardNumber}
-                      setCardNumber={setCardNumber}
-                      cardExpiry={cardExpiry}
-                      setCardExpiry={setCardExpiry}
+                      onCardChange={(num, exp) => {
+                        setCardNumber(num);
+                        setCardExpiry(exp);
+                      }}
                     />
                   </Elements>
                 )}
