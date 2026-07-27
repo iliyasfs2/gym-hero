@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Check, Zap, Crown, ShieldCheck, LucideIcon } from "lucide-react";
+import PaymentModal from "@/app/user/buy_subscribe/components/PaymentModal";
 
 export interface PlanFromDB {
   id: string;
@@ -19,9 +20,8 @@ interface PlanCardProps {
   plan: PlanFromDB;
   index: number;
   isSelected: boolean;
-  isLoading: boolean;
   onSelect: (id: string) => void;
-  onPurchase: (id: string, e: React.MouseEvent) => void;
+  onPurchase: (plan: PlanFromDB, e: React.MouseEvent) => void;
 }
 
 const PLAN_ICONS: LucideIcon[] = [Zap, ShieldCheck, Crown];
@@ -36,7 +36,6 @@ function PlanCard({
   plan,
   index,
   isSelected,
-  isLoading,
   onSelect,
   onPurchase,
 }: PlanCardProps) {
@@ -97,19 +96,14 @@ function PlanCard({
 
       <button
         type="button"
-        onClick={(e) => onPurchase(plan.id, e)}
-        disabled={isLoading}
+        onClick={(e) => onPurchase(plan, e)}
         className={`w-full mt-10 py-4 rounded-2xl font-bold text-base transition-all duration-200 ${
           isSelected
             ? "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-600/30"
             : "bg-white/[0.06] text-slate-200 hover:bg-white/[0.12]"
         }`}
       >
-        {isLoading
-          ? "Processing..."
-          : isSelected
-            ? "Get Started"
-            : "Select Plan"}
+        {isSelected ? "Get Started" : "Select Plan"}
       </button>
     </div>
   );
@@ -119,17 +113,15 @@ export default function SubscribeClient({ plans = [] }: SubscribeClientProps) {
   const [selectedPlan, setSelectedPlan] = useState<string>(
     plans?.[0]?.id || "",
   );
-  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
 
-  const handlePurchase = (planId: string, e: React.MouseEvent) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activePlan, setActivePlan] = useState<PlanFromDB | null>(null);
+
+  const handlePurchase = (plan: PlanFromDB, e: React.MouseEvent) => {
     e.stopPropagation();
-    setSelectedPlan(planId);
-    setLoadingPlanId(planId);
-
-    setTimeout(() => {
-      alert(`Proceeding to checkout for plan ID: ${planId}`);
-      setLoadingPlanId(null);
-    }, 1000);
+    setSelectedPlan(plan.id);
+    setActivePlan(plan);
+    setIsModalOpen(true);
   };
 
   return (
@@ -155,12 +147,20 @@ export default function SubscribeClient({ plans = [] }: SubscribeClientProps) {
               plan={plan}
               index={index}
               isSelected={selectedPlan === plan.id}
-              isLoading={loadingPlanId === plan.id}
               onSelect={setSelectedPlan}
               onPurchase={handlePurchase}
             />
           ))}
         </div>
+      )}
+
+      {activePlan && (
+        <PaymentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          amount={Number(activePlan.price)}
+          planName={activePlan.name}
+        />
       )}
     </div>
   );

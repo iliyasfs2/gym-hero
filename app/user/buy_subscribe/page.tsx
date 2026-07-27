@@ -1,7 +1,7 @@
 import React from "react";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import SubscribeClient from "./SubscribeClient";
+import SubscribeClient from "./components/SubscribeClient";
 
 export default async function SubscribePage() {
   const supabase = await createClient();
