@@ -25,5 +25,7 @@ export default async function SubscribePage() {
     console.error("Error fetching plans:", dbError.message);
   }
 
-  return <SubscribeClient plans={activePlans || []} />;
+  const safePlans = activePlans ? JSON.parse(JSON.stringify(activePlans)) : [];
+
+  return <SubscribeClient plans={safePlans} />;
 }

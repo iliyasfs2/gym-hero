@@ -8,17 +8,19 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const amount = Number(body?.amount);
 
-    if (!amount || amount <= 0) {
+    const rawAmount =
+      typeof body?.amount === "number" ? body.amount : Number(body?.amount);
+
+    if (isNaN(rawAmount) || rawAmount <= 0) {
       return NextResponse.json(
-        { error: "Invalid amount provided." },
+        { error: "Invalid or missing amount." },
         { status: 400 },
       );
     }
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100),
+      amount: Math.round(rawAmount * 100),
       currency: "usd",
       automatic_payment_methods: {
         enabled: true,
@@ -32,8 +34,9 @@ export async function POST(req: Request) {
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error: any) {
+    console.error("Stripe Checkout Error:", error);
     return NextResponse.json(
-      { error: String(error?.message || "Failed to create PaymentIntent") },
+      { error: error?.message || "Failed to create PaymentIntent" },
       { status: 500 },
     );
   }

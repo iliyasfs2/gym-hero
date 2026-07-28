@@ -21,7 +21,7 @@ interface PlanCardProps {
   index: number;
   isSelected: boolean;
   onSelect: (id: string) => void;
-  onPurchase: (plan: PlanFromDB, e: React.MouseEvent) => void;
+  onPurchase: (plan: PlanFromDB) => void;
 }
 
 const PLAN_ICONS: LucideIcon[] = [Zap, ShieldCheck, Crown];
@@ -96,7 +96,10 @@ function PlanCard({
 
       <button
         type="button"
-        onClick={(e) => onPurchase(plan, e)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onPurchase(plan);
+        }}
         className={`w-full mt-10 py-4 rounded-2xl font-bold text-base transition-all duration-200 ${
           isSelected
             ? "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-600/30"
@@ -115,12 +118,19 @@ export default function SubscribeClient({ plans = [] }: SubscribeClientProps) {
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activePlan, setActivePlan] = useState<PlanFromDB | null>(null);
+  const [activePlan, setActivePlan] = useState<{
+    name: string;
+    price: number;
+  } | null>(null);
 
-  const handlePurchase = (plan: PlanFromDB, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handlePurchase = (plan: PlanFromDB) => {
     setSelectedPlan(plan.id);
-    setActivePlan(plan);
+
+    setActivePlan({
+      name: String(plan.name),
+      price: Number(plan.price) || 0,
+    });
+
     setIsModalOpen(true);
   };
 
@@ -158,7 +168,7 @@ export default function SubscribeClient({ plans = [] }: SubscribeClientProps) {
         <PaymentModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          amount={Number(activePlan.price)}
+          amount={activePlan.price}
           planName={activePlan.name}
         />
       )}
