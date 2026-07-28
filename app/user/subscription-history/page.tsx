@@ -29,37 +29,51 @@ export default async function HistoryPage() {
   );
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (authError || !user) {
     redirect("/login");
   }
 
   const { data, error } = await supabase
     .from("subscriptions")
     .select("*")
-    .eq("user_id", session.user.id)
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching subscriptions:", error.message);
   }
 
+  if (!data || data.length === 0) {
+    console.log("No subscription records found for user:", user.id);
+  }
+
   const now = new Date();
 
   const formattedSubscriptions: SubscriptionRecord[] = (data || []).map(
     (item) => {
-      const endDate = item.end_date ? new Date(item.end_date) : new Date();
-      const status = endDate > now ? "Active" : "Expired";
+      const rawEndDate = item.end_date || item.endDate;
+      const endDate = rawEndDate ? new Date(rawEndDate) : new Date();
+
+      const isStillActive = item.status
+        ? item.status.toLowerCase() === "active"
+        : endDate > now;
+
+      const status: "Active" | "Expired" = isStillActive ? "Active" : "Expired";
 
       return {
-        id: item.id,
-        planName: item.name || "Plan",
+        id: String(item.id),
+
+        planName: item.name || item.plan_name || item.planName || "Plan",
         price: Number(item.price || 0),
         duration: item.duration || "1 Month",
-        startDate: item.start_date || item.created_at,
-        endDate: item.end_date || item.created_at,
+
+        startDate:
+          item.start_date || item.created_at || new Date().toISOString(),
+        endDate: rawEndDate || new Date().toISOString(),
         status: status,
       };
     },

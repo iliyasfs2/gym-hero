@@ -7,9 +7,15 @@ import CustomCheckoutForm from "./CustomCheckoutForm";
 import { X, ShieldCheck, Lock, Check, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { createClient } from "@supabase/supabase-js";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+);
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
 interface PaymentModalProps {
@@ -17,6 +23,7 @@ interface PaymentModalProps {
   onClose: () => void;
   amount: number;
   planName: string;
+  userId?: string;
 }
 
 export default function PaymentModal({
@@ -24,6 +31,7 @@ export default function PaymentModal({
   onClose,
   amount,
   planName,
+  userId: propUserId,
 }: PaymentModalProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,26 +45,52 @@ export default function PaymentModal({
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+
+    let isMounted = true;
+
+    const fetchCheckoutSecret = async () => {
       setLoading(true);
       setIsSuccess(false);
-      fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: Number(amount) }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data?.clientSecret) {
-            setClientSecret(data.clientSecret);
-          }
-          setLoading(false);
-        })
-        .catch(() => {
-          setLoading(false);
+
+      try {
+        let currentUserId = propUserId;
+
+        if (!currentUserId) {
+          const { data } = await supabase.auth.getUser();
+          currentUserId = data.user?.id;
+        }
+
+        const res = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: Number(amount),
+            planName,
+            userId: currentUserId,
+          }),
         });
-    }
-  }, [isOpen, amount]);
+
+        const data = await res.json();
+
+        if (isMounted && data?.clientSecret) {
+          setClientSecret(data.clientSecret);
+        }
+      } catch (err: unknown) {
+        console.error("Failed to fetch clientSecret:", err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchCheckoutSecret();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, amount, planName, propUserId]);
 
   const handlePaymentSuccess = () => {
     setIsSuccess(true);
@@ -180,6 +214,7 @@ export default function PaymentModal({
                   >
                     <CustomCheckoutForm
                       amount={amount}
+                      planName={planName}
                       clientSecret={clientSecret}
                       onClose={() => handleSafeClose()}
                       onSuccess={handlePaymentSuccess}

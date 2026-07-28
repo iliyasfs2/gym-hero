@@ -41,7 +41,7 @@ const FILTER_TABS = [
 ];
 
 export function SubscriptionHistoryClient({
-  initialSubscriptions,
+  initialSubscriptions = [],
 }: SubscriptionHistoryClientProps) {
   const [filter, setFilter] = useState<FilterStatus>("All");
   const [sortOption, setSortOption] = useState<SortOption>("newest");
@@ -50,16 +50,22 @@ export function SubscriptionHistoryClient({
   const initialExpandedId = useMemo(() => {
     if (!initialSubscriptions || initialSubscriptions.length === 0) return null;
     const sortedByPriority = [...initialSubscriptions].sort((a, b) => {
-      if (a.status === "Active" && b.status !== "Active") return -1;
-      if (a.status !== "Active" && b.status === "Active") return 1;
+      const isAActive = a.status?.toLowerCase() === "active";
+      const isBActive = b.status?.toLowerCase() === "active";
+      if (isAActive && !isBActive) return -1;
+      if (!isAActive && isBActive) return 1;
       return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
     });
-    return sortedByPriority[0].id;
+    return sortedByPriority[0]?.id || null;
   }, [initialSubscriptions]);
 
   const [expandedId, setExpandedId] = useState<string | null>(
     initialExpandedId,
   );
+
+  useEffect(() => {
+    setExpandedId(initialExpandedId);
+  }, [initialExpandedId]);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -88,27 +94,35 @@ export function SubscriptionHistoryClient({
   };
 
   const processedSubscriptions = useMemo(() => {
+    if (!Array.isArray(initialSubscriptions)) return [];
+
     return [...initialSubscriptions]
-      .filter((sub) => (filter === "All" ? true : sub.status === filter))
+      .filter((sub) => {
+        if (filter === "All") return true;
+
+        return sub.status?.toLowerCase() === filter.toLowerCase();
+      })
       .sort((a, b) => {
-        if (a.status === "Active" && b.status !== "Active") return -1;
-        if (a.status !== "Active" && b.status === "Active") return 1;
+        const isAActive = a.status?.toLowerCase() === "active";
+        const isBActive = b.status?.toLowerCase() === "active";
+
+        if (isAActive && !isBActive) return -1;
+        if (!isAActive && isBActive) return 1;
+
+        const timeA = new Date(a.startDate).getTime() || 0;
+        const timeB = new Date(b.startDate).getTime() || 0;
 
         if (sortOption === "newest") {
-          return (
-            new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-          );
+          return timeB - timeA;
         }
         if (sortOption === "oldest") {
-          return (
-            new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-          );
+          return timeA - timeB;
         }
         if (sortOption === "highest_price") {
-          return b.price - a.price;
+          return (b.price || 0) - (a.price || 0);
         }
         if (sortOption === "lowest_price") {
-          return a.price - b.price;
+          return (a.price || 0) - (b.price || 0);
         }
         return 0;
       });
