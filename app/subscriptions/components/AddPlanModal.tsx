@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { addPlanAction } from "../actions/actions";
 
 interface AddPlanModalProps {
@@ -48,17 +49,17 @@ export default function AddPlanModal({ isOpen }: AddPlanModalProps) {
 
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1.5">
-              Price (Toman)
+              Price ($)
             </label>
             <input
               type="number"
               name="price"
-              placeholder="500,000"
+              placeholder="50"
               value={formData.price}
               onChange={(e) =>
                 setFormData({ ...formData, price: e.target.value })
               }
-              className="w-full bg-black/40 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full bg-black/40 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none font-mono"
               required
             />
           </div>
@@ -90,13 +91,13 @@ export default function AddPlanModal({ isOpen }: AddPlanModalProps) {
                   id: "Active",
                   name: "Active",
                   desc: "Available for new members",
-                  icon: "🟢",
+                  icon: <CheckCircle2 className="w-5 h-5 text-emerald-400" />,
                 },
                 {
                   id: "Inactive",
                   name: "Inactive",
                   desc: "Hidden from registrations",
-                  icon: "🔴",
+                  icon: <XCircle className="w-5 h-5 text-rose-400" />,
                 },
               ].map((statusItem) => {
                 const isSelected = formData.status === statusItem.id;
@@ -112,7 +113,6 @@ export default function AddPlanModal({ isOpen }: AddPlanModalProps) {
                         : "border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.02]"
                     }`}
                   >
-                   
                     {isSelected && (
                       <input
                         type="hidden"
@@ -122,7 +122,7 @@ export default function AddPlanModal({ isOpen }: AddPlanModalProps) {
                     )}
 
                     <div className="flex items-center gap-3">
-                      <span className="text-xl bg-white/[0.03] p-2 rounded-lg border border-white/[0.05]">
+                      <span className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-center justify-center">
                         {statusItem.icon}
                       </span>
                       <div>
