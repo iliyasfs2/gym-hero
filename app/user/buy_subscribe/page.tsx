@@ -3,6 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import SubscribeClient from "./components/SubscribeClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function SubscribePage() {
   const supabase = await createClient();
 
@@ -16,7 +18,7 @@ export default async function SubscribePage() {
   }
 
   const { data: activePlans, error: dbError } = await supabase
-    .from("subscriptions")
+    .from("plans")
     .select("*")
     .eq("status", "Active")
     .order("price", { ascending: true });

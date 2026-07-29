@@ -38,17 +38,13 @@ export default async function HistoryPage() {
   }
 
   const { data, error } = await supabase
-    .from("subscriptions")
+    .from("user_subscriptions")
     .select("*")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching subscriptions:", error.message);
-  }
-
-  if (!data || data.length === 0) {
-    console.log("No subscription records found for user:", user.id);
   }
 
   const now = new Date();
@@ -58,35 +54,43 @@ export default async function HistoryPage() {
       const rawEndDate = item.end_date || item.endDate;
       const endDate = rawEndDate ? new Date(rawEndDate) : new Date();
 
-      const isStillActive = item.status
-        ? item.status.toLowerCase() === "active"
-        : endDate > now;
-
+      const isStillActive =
+        endDate > now && item.status?.toLowerCase() !== "cancelled";
       const status: "Active" | "Expired" = isStillActive ? "Active" : "Expired";
+
+      const rawPrice = item.amount ?? item.price ?? 0;
 
       return {
         id: String(item.id),
-
-        planName: item.name || item.plan_name || item.planName || "Plan",
-        price: Number(item.price || 0),
-        duration: item.duration || "1 Month",
-
+        planName: item.plan_name || item.planName || item.name || "Plan",
+        price: Number(rawPrice),
+        duration: item.duration_months
+          ? `${item.duration_months} Month${item.duration_months > 1 ? "s" : ""}`
+          : item.duration || "1 Month",
         startDate:
           item.start_date || item.created_at || new Date().toISOString(),
         endDate: rawEndDate || new Date().toISOString(),
-        status: status,
+        status,
       };
     },
   );
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-8">
-      <h1 className="text-2xl font-bold text-white mb-6">
-        Subscription History
-      </h1>
-      <SubscriptionHistoryClient
-        initialSubscriptions={formattedSubscriptions}
-      />
-    </div>
+    <main className="min-h-screen bg-slate-950 text-white p-4 sm:p-6 md:p-10">
+      <div className="max-w-5xl mx-auto space-y-6">
+        <header className="flex flex-col gap-1 border-b border-white/10 pb-5">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            Subscription History
+          </h1>
+          <p className="text-sm text-slate-400">
+            View and manage all your past and active membership plans.
+          </p>
+        </header>
+
+        <SubscriptionHistoryClient
+          initialSubscriptions={formattedSubscriptions}
+        />
+      </div>
+    </main>
   );
 }

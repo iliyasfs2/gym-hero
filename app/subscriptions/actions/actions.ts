@@ -30,8 +30,9 @@ export async function addPlanAction(formData: FormData) {
     return;
   }
 
-  revalidatePath("/subscriptions");
-  revalidatePath("/user/subscribe");
+  // بروزرسانی کش هر دو مسیر
+  revalidatePath("/subscriptions", "page");
+  revalidatePath("/user/subscribe", "page");
 
   redirect("/subscriptions");
 }
@@ -60,8 +61,8 @@ export async function updatePlanAction(formData: FormData) {
     return;
   }
 
-  revalidatePath("/subscriptions");
-  revalidatePath("/user/subscribe");
+  revalidatePath("/subscriptions", "page");
+  revalidatePath("/user/subscribe", "page");
 
   redirect("/subscriptions");
 }
@@ -83,8 +84,8 @@ export async function deletePlanAction(formData: FormData) {
     return;
   }
 
-  revalidatePath("/subscriptions");
-  revalidatePath("/user/subscribe");
+  revalidatePath("/subscriptions", "page");
+  revalidatePath("/user/subscribe", "page");
 
   redirect("/subscriptions");
 }

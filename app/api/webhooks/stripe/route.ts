@@ -4,7 +4,7 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia",
+  apiVersion: "2025-01-27.acacia" as any,
 });
 
 const supabase = createClient(
@@ -35,43 +35,63 @@ export async function POST(req: Request) {
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "Webhook verification failed";
-    console.error(`❌ Webhook Error: ${errorMessage}`);
+    console.error(`Webhook Verification Error: ${errorMessage}`);
     return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
+
+  console.log(`Event received: ${event.type}`);
 
   if (event.type === "payment_intent.succeeded") {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
-    const userId = paymentIntent.metadata.userId;
-    const planName = paymentIntent.metadata.planName || "Subscription Plan";
+    console.log("PaymentIntent Metadata:", paymentIntent.metadata);
+
+    const userId = paymentIntent.metadata?.userId;
+    const planName = paymentIntent.metadata?.planName || "Subscription Plan";
+    const durationNum =
+      parseInt(paymentIntent.metadata?.duration || "1", 10) || 1;
     const amount = paymentIntent.amount / 100;
 
-    if (userId) {
-      const { error: historyError } = await supabase
-        .from("payment_history")
-        .insert({
-          user_id: userId,
-          amount: amount,
-          plan_name: planName,
-          status: "SUCCESS",
-          transaction_id: paymentIntent.id,
-        });
+    if (!userId) {
+      console.error("❌ ERROR: userId is missing in paymentIntent metadata!");
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
 
-      if (historyError) {
-        console.error("Supabase History Insert Error:", historyError.message);
-      }
+    console.log(` Processing subscription for userId: ${userId}`);
 
-      const { error: userError } = await supabase
-        .from("profiles")
-        .update({
-          is_subscribed: true,
-          current_plan: planName,
-        })
-        .eq("id", userId);
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setMonth(startDate.getMonth() + durationNum);
 
-      if (userError) {
-        console.error("Supabase User Update Error:", userError.message);
-      }
+    const { data: subData, error: subError } = await supabase
+      .from("user_subscriptions")
+      .insert({
+        user_id: userId,
+        plan_name: planName,
+        amount: amount,
+        duration_months: durationNum,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+        status: "Active",
+      })
+      .select();
+
+    if (subError) {
+      console.error("❌ Supabase Subscription Insert Error:", subError.message);
+    } else {
+      console.log("Successfully inserted subscription:", subData);
+    }
+
+    const { error: userError } = await supabase
+      .from("profiles")
+      .update({
+        is_subscribed: true,
+        current_plan: planName,
+      })
+      .eq("id", userId);
+
+    if (userError) {
+      console.error("❌ Supabase User Update Error:", userError.message);
     }
   }
 

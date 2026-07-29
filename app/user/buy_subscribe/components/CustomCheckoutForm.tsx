@@ -17,12 +17,6 @@ import {
   Calendar,
   ShieldCheck,
 } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
 
 interface CustomCheckoutFormProps {
   amount: number;
@@ -89,27 +83,6 @@ export default function CustomCheckoutForm({
           error.message || "Payment failed. Please check your card details.",
         );
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        const { data: userData } = await supabase.auth.getUser();
-        const currentUserId = userData.user?.id;
-
-        if (currentUserId) {
-          await supabase.from("payment_history").insert({
-            user_id: currentUserId,
-            amount: Number(amount),
-            plan_name: planName,
-            status: "SUCCESS",
-            transaction_id: paymentIntent.id,
-          });
-
-          await supabase
-            .from("profiles")
-            .update({
-              is_subscribed: true,
-              current_plan: planName,
-            })
-            .eq("id", currentUserId);
-        }
-
         onSuccess();
       }
     } catch (err: unknown) {

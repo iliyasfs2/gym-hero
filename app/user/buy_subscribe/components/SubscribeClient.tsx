@@ -32,6 +32,12 @@ const PLAN_FEATURES = [
   "Locker & sauna",
 ] as const;
 
+function formatDuration(duration: string | number): string {
+  const num = parseInt(String(duration), 10);
+  if (isNaN(num)) return String(duration);
+  return num === 1 ? "1 Month" : `${num} Months`;
+}
+
 function PlanCard({
   plan,
   index,
@@ -61,8 +67,8 @@ function PlanCard({
           >
             <Icon size={28} />
           </div>
-          <span className="text-xs font-semibold tracking-wider uppercase text-slate-400 bg-white/[0.04] px-4 py-1.5 rounded-full border border-white/[0.06]">
-            {plan.duration}
+          <span className="text-xs font-semibold tracking-wider uppercase text-slate-300 bg-white/[0.06] px-4 py-1.5 rounded-full border border-white/[0.08]">
+            {formatDuration(plan.duration)}
           </span>
         </div>
 

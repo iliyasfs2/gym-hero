@@ -1,21 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import CustomCheckoutForm from "./CustomCheckoutForm";
 import { X, ShieldCheck, Lock, Check, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-);
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
 interface PaymentModalProps {
@@ -24,6 +19,8 @@ interface PaymentModalProps {
   amount: number;
   planName: string;
   userId?: string;
+  duration?: string;
+  onSuccessCallback?: () => void;
 }
 
 export default function PaymentModal({
@@ -32,17 +29,27 @@ export default function PaymentModal({
   amount,
   planName,
   userId: propUserId,
+  duration = "1 Month",
+  onSuccessCallback,
 }: PaymentModalProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSafeClose = (e?: React.MouseEvent) => {
-    if (e) {
-      e.stopPropagation();
-    }
-    onClose();
-  };
+  
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
+  const handleSafeClose = useCallback(
+    (e?: React.MouseEvent) => {
+      if (e) e.stopPropagation();
+      onClose();
+    },
+    [onClose],
+  );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -52,6 +59,7 @@ export default function PaymentModal({
     const fetchCheckoutSecret = async () => {
       setLoading(true);
       setIsSuccess(false);
+      setError(null);
 
       try {
         let currentUserId = propUserId;
@@ -68,8 +76,13 @@ export default function PaymentModal({
             amount: Number(amount),
             planName,
             userId: currentUserId,
+            duration,
           }),
         });
+
+        if (!res.ok) {
+          throw new Error("Failed to initialize checkout session.");
+        }
 
         const data = await res.json();
 
@@ -77,11 +90,12 @@ export default function PaymentModal({
           setClientSecret(data.clientSecret);
         }
       } catch (err: unknown) {
-        console.error("Failed to fetch clientSecret:", err);
-      } finally {
+        console.error("Checkout secret fetch error:", err);
         if (isMounted) {
-          setLoading(false);
+          setError("Unable to initialize payment gateway. Please try again.");
         }
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
 
@@ -90,10 +104,11 @@ export default function PaymentModal({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, amount, planName, propUserId]);
+  }, [isOpen, amount, planName, propUserId, duration, supabase]);
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
     setIsSuccess(true);
+
     confetti({
       particleCount: 80,
       spread: 60,
@@ -104,6 +119,11 @@ export default function PaymentModal({
     setTimeout(() => {
       handleSafeClose();
       setIsSuccess(false);
+      if (onSuccessCallback) {
+        onSuccessCallback();
+      } else {
+        window.location.reload();
+      }
     }, 2500);
   };
 
@@ -112,7 +132,7 @@ export default function PaymentModal({
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md">
-        <div className="fixed inset-0" onClick={(e) => handleSafeClose(e)} />
+        <div className="fixed inset-0" onClick={handleSafeClose} />
 
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
@@ -126,8 +146,8 @@ export default function PaymentModal({
 
           <button
             type="button"
-            onClick={(e) => handleSafeClose(e)}
-            className="absolute top-2 right-2 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all active:scale-90 z-20"
+            onClick={handleSafeClose}
+            className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all active:scale-90 z-20"
           >
             <X size={20} />
           </button>
@@ -189,10 +209,18 @@ export default function PaymentModal({
 
                 {loading || !clientSecret ? (
                   <div className="py-20 flex flex-col items-center justify-center gap-3">
-                    <div className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-                    <span className="text-xs text-slate-400 font-medium tracking-wide">
-                      Connecting to Live Gateway...
-                    </span>
+                    {error ? (
+                      <p className="text-xs text-red-400 font-medium">
+                        {error}
+                      </p>
+                    ) : (
+                      <>
+                        <div className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+                        <span className="text-xs text-slate-400 font-medium tracking-wide">
+                          Connecting to Live Gateway...
+                        </span>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <Elements
@@ -216,7 +244,7 @@ export default function PaymentModal({
                       amount={amount}
                       planName={planName}
                       clientSecret={clientSecret}
-                      onClose={() => handleSafeClose()}
+                      onClose={handleSafeClose}
                       onSuccess={handlePaymentSuccess}
                     />
                   </Elements>

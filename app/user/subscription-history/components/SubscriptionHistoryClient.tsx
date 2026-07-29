@@ -99,7 +99,6 @@ export function SubscriptionHistoryClient({
     return [...initialSubscriptions]
       .filter((sub) => {
         if (filter === "All") return true;
-
         return sub.status?.toLowerCase() === filter.toLowerCase();
       })
       .sort((a, b) => {
