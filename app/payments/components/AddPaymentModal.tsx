@@ -13,7 +13,6 @@ interface AddPaymentModalProps {
 export default function AddPaymentModal({ isOpen }: AddPaymentModalProps) {
   const router = useRouter();
 
- 
   const [form, setForm] = useState({
     memberName: "",
     amount: "",
@@ -27,7 +26,6 @@ export default function AddPaymentModal({ isOpen }: AddPaymentModalProps) {
     e.preventDefault();
     if (!form.memberName || !form.amount) return;
 
-   
     const formData = new FormData();
     formData.append("memberName", form.memberName);
     formData.append("amount", form.amount);
@@ -36,7 +34,6 @@ export default function AddPaymentModal({ isOpen }: AddPaymentModalProps) {
 
     await addPaymentAction(formData);
 
-    
     setForm({ memberName: "", amount: "", method: "Online", status: "Paid" });
     router.push("/payments");
   };
@@ -46,19 +43,66 @@ export default function AddPaymentModal({ isOpen }: AddPaymentModalProps) {
       id: "Online" as const,
       title: "Online Payment",
       desc: "Instant gateway transfer",
-      icon: "🌐",
+      iconContainerClass: "bg-sky-500/10 border-sky-500/20 text-sky-400",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 010 18M12.5 3a17 17 0 000 18"
+          />
+        </svg>
+      ),
     },
     {
       id: "Card" as const,
       title: "Card Reader / POS",
       desc: "Physical terminal swipe",
-      icon: "💳",
+      iconContainerClass:
+        "bg-purple-500/10 border-purple-500/20 text-purple-400",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+          />
+        </svg>
+      ),
     },
     {
       id: "Cash" as const,
       title: "Cash Payment",
       desc: "Hand-to-hand currency",
-      icon: "💵",
+      iconContainerClass:
+        "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+          />
+        </svg>
+      ),
     },
   ];
 
@@ -145,7 +189,9 @@ export default function AddPaymentModal({ isOpen }: AddPaymentModalProps) {
                     }`}
                   >
                     <div className="flex items-center gap-3.5">
-                      <div className="w-10 h-10 rounded-lg bg-white/[0.02] border border-white/[0.05] flex items-center justify-center text-lg shadow-inner">
+                      <div
+                        className={`w-10 h-10 rounded-lg border flex items-center justify-center text-lg shadow-inner ${option.iconContainerClass}`}
+                      >
                         {option.icon}
                       </div>
                       <div>
