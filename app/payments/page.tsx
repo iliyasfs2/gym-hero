@@ -12,22 +12,43 @@ export default async function PaymentsPage({
   searchParams: Promise<{ modal?: string }>;
 }) {
   const supabase = await createClient();
-  const { data: fetchedTransactions } = await supabase
-    .from("payments")
+
+  const { data: subscriptions } = await supabase
+    .from("user_subscriptions")
     .select("*")
     .order("created_at", { ascending: false });
 
-  const transactions: Transaction[] = (fetchedTransactions || []).map(
-    (tx: any) => ({
-      id: tx.id,
-      memberName: tx.member_name,
-      amount: tx.amount,
-      method: tx.method,
-      date: tx.created_at ? tx.created_at.split("T")[0] : tx.date,
-      status: tx.status,
-      invoiceNo: tx.invoice_no,
-    }),
+  const userIds = Array.from(
+    new Set((subscriptions || []).map((s: any) => s.user_id).filter(Boolean)),
   );
+
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .order("full_name", { ascending: true });
+
+  const profileMap = new Map(
+    (profiles || []).map((p: any) => [p.id, p.full_name]),
+  );
+
+  const transactions: Transaction[] = (subscriptions || []).map((sub: any) => ({
+    id: sub.id,
+    memberName: profileMap.get(sub.user_id) || "Unknown Member",
+    amount: Number(sub.amount) || 0,
+    method: sub.method || "Online",
+    date: sub.start_date
+      ? sub.start_date.split("T")[0]
+      : sub.created_at
+        ? sub.created_at.split("T")[0]
+        : "",
+    status: sub.payment_status || "Paid",
+    invoiceNo: `SUB-${String(sub.id).slice(0, 8).toUpperCase()}`,
+  }));
+
+  const members = (profiles || []).map((p: any) => ({
+    id: p.id,
+    fullName: p.full_name || "Unnamed User",
+  }));
 
   const resolvedParams = await searchParams;
   const isModalOpen = resolvedParams.modal === "add-payment";
@@ -63,7 +84,7 @@ export default async function PaymentsPage({
         <TransactionTable transactions={transactions} />
       </div>
 
-      <AddPaymentModalWrapper isOpen={isModalOpen} />
+      <AddPaymentModalWrapper isOpen={isModalOpen} members={members} />
     </div>
   );
 }

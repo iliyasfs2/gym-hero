@@ -12,6 +12,14 @@ import {
 } from "recharts";
 import { TimeFrame, Transaction } from "./types";
 
+type TransactionItem = Transaction & {
+  status?: string;
+  created_at?: string;
+  date?: string;
+  timestamp?: string;
+  amount?: number | string;
+};
+
 interface RevenueChartProps {
   timeFrame: TimeFrame;
   setTimeFrame: (value: TimeFrame) => void;
@@ -23,17 +31,17 @@ export default function RevenueChart({
   setTimeFrame,
   transactions,
 }: RevenueChartProps) {
-  
   const paidTransactions = useMemo(() => {
-    return (transactions || []).filter((tx: any) => {
-      const isPaid = tx.status?.toLowerCase() === "paid";
-    
+    return (transactions || []).filter((tx: TransactionItem) => {
+      const status = String(tx.status || "").toLowerCase();
+      const isPaid =
+        status === "paid" || status === "completed" || status === "succeeded";
+
       const hasDate = tx.created_at || tx.date || tx.timestamp;
       return isPaid && hasDate;
     });
   }, [transactions]);
 
-  
   const chartData = useMemo(() => {
     const now = new Date();
     const currentUTCString = now.toISOString();
@@ -57,15 +65,18 @@ export default function RevenueChart({
           { name: "22:00", revenue: 0 },
         ];
 
-        paidTransactions.forEach((tx: any) => {
-         
-          const rawDate = tx.created_at || tx.date || tx.timestamp;
+        paidTransactions.forEach((tx: TransactionItem) => {
+          const rawDate = String(
+            tx.created_at || tx.date || tx.timestamp || "",
+          );
           if (!rawDate) return;
 
-          const [txDate, txTime] = rawDate.split("T");
+          const parts = rawDate.split("T");
+          const txDate = parts[0];
+          const txTime = parts[1] || "00:00:00";
 
           if (txDate === currentDateUTC) {
-            const hour = parseInt(txTime?.substring(0, 2) || "0", 10);
+            const hour = parseInt(txTime.substring(0, 2) || "0", 10);
             const bucketIndex = Math.floor(hour / 2);
             if (todayTemplate[bucketIndex]) {
               todayTemplate[bucketIndex].revenue += Number(tx.amount || 0);
@@ -87,8 +98,10 @@ export default function RevenueChart({
           { name: "Day 30", revenue: 0 },
         ];
 
-        paidTransactions.forEach((tx: any) => {
-          const rawDate = tx.created_at || tx.date || tx.timestamp;
+        paidTransactions.forEach((tx: TransactionItem) => {
+          const rawDate = String(
+            tx.created_at || tx.date || tx.timestamp || "",
+          );
           if (!rawDate) return;
 
           const [txDate] = rawDate.split("T");
@@ -131,8 +144,10 @@ export default function RevenueChart({
           { name: "Dec", revenue: 0 },
         ];
 
-        paidTransactions.forEach((tx: any) => {
-          const rawDate = tx.created_at || tx.date || tx.timestamp;
+        paidTransactions.forEach((tx: TransactionItem) => {
+          const rawDate = String(
+            tx.created_at || tx.date || tx.timestamp || "",
+          );
           if (!rawDate) return;
 
           const [txDate] = rawDate.split("T");

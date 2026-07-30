@@ -1,66 +1,42 @@
-export type PaymentStatus = "Paid" | "Pending" | "Failed";
-export type TimeFrame = "Today" | "Month" | "Year";
+"use server";
 
-export interface Transaction {
-  id: string;
-  memberName: string;
-  amount: number; 
-  method: "Cash" | "Online" | "Card";
-  date: string;
-  status: PaymentStatus;
-  invoiceNo: string;
+import { createClient } from "@supabase/supabase-js";
+import { revalidatePath } from "next/cache";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+export async function addPaymentAction(formData: FormData) {
+  const userId = formData.get("userId") as string;
+  const amount = Number(formData.get("amount"));
+  const method = formData.get("method") as string;
+  const status = formData.get("status") as string;
+
+  if (!userId || !amount) return { error: "Missing fields" };
+
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setMonth(startDate.getMonth() + 1);
+
+  const { error } = await supabase.from("user_subscriptions").insert([
+    {
+      user_id: userId,
+      plan_name: "Manual Payment",
+      amount: amount,
+      duration_months: 1,
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
+      status: "Active",
+      payment_status: status,
+      method: method,
+    },
+  ]);
+
+  if (error) {
+    console.error("Error inserting payment:", error.message);
+    return { error: error.message };
+  }
+
+  revalidatePath("/payments");
 }
-
-export interface ChartDataPoint {
-  label: string; 
-  amount: number;
-}
-
-
-export const MOCK_TRANSACTIONS: Transaction[] = [
-  {
-    id: "t1",
-    memberName: "Ali Ahmadi",
-    amount: 150,
-    method: "Online",
-    date: "2026-07-03",
-    status: "Paid",
-    invoiceNo: "INV-8821",
-  },
-  {
-    id: "t2",
-    memberName: "Sara Kamali",
-    amount: 100,
-    method: "Card",
-    date: "2026-07-02",
-    status: "Pending",
-    invoiceNo: "INV-8822",
-  },
-  {
-    id: "t3",
-    memberName: "Reza Nouri",
-    amount: 150,
-    method: "Cash",
-    date: "2026-07-01",
-    status: "Paid",
-    invoiceNo: "INV-8823",
-  },
-  {
-    id: "t4",
-    memberName: "Mina Alavi",
-    amount: 50,
-    method: "Online",
-    date: "2026-06-28",
-    status: "Failed",
-    invoiceNo: "INV-8824",
-  },
-  {
-    id: "t5",
-    memberName: "Arash Moradi",
-    amount: 150,
-    method: "Online",
-    date: "2026-06-25",
-    status: "Paid",
-    invoiceNo: "INV-8825",
-  },
-];

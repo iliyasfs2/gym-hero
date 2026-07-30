@@ -4,6 +4,15 @@ import React, { useState } from "react";
 import { Transaction } from "./types";
 import InvoiceModal from "./InvoiceModal";
 
+type TransactionRow = Transaction & {
+  memberName?: string;
+  invoiceNo?: string;
+  amount?: number | string;
+  method?: string;
+  date?: string;
+  status?: "Paid" | "Pending" | "Failed" | string;
+};
+
 interface TransactionTableProps {
   transactions: Transaction[];
 }
@@ -18,11 +27,15 @@ export default function TransactionTable({
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
 
-  const filteredTransactions = transactions.filter(
-    (tx) =>
-      tx.memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tx.invoiceNo.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const safeTransactions = (transactions || []) as TransactionRow[];
+
+  const filteredTransactions = safeTransactions.filter((tx) => {
+    const memberName = String(tx.memberName || "").toLowerCase();
+    const invoiceNo = String(tx.invoiceNo || "").toLowerCase();
+    const query = searchTerm.toLowerCase();
+
+    return memberName.includes(query) || invoiceNo.includes(query);
+  });
 
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -37,20 +50,25 @@ export default function TransactionTable({
     setCurrentPage(1);
   };
 
-  const handleOpenInvoice = (tx: Transaction) => {
-    setSelectedTx(tx);
+  const handleOpenInvoice = (tx: TransactionRow) => {
+    setSelectedTx(tx as Transaction);
     setIsInvoiceOpen(true);
   };
 
-  const getStatusStyle = (status: Transaction["status"]) => {
-    switch (status) {
-      case "Paid":
-        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-      case "Pending":
-        return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-      case "Failed":
-        return "bg-rose-500/10 text-rose-400 border-rose-500/20";
+  const getStatusStyle = (status?: string) => {
+    const normalizedStatus = String(status || "").toLowerCase();
+
+    if (
+      normalizedStatus === "paid" ||
+      normalizedStatus === "completed" ||
+      normalizedStatus === "succeeded"
+    ) {
+      return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
     }
+    if (normalizedStatus === "pending") {
+      return "bg-amber-500/10 text-amber-400 border-amber-500/20";
+    }
+    return "bg-rose-500/10 text-rose-400 border-rose-500/20";
   };
 
   return (
@@ -58,7 +76,6 @@ export default function TransactionTable({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h3 className="flex items-center gap-2 text-lg font-bold text-slate-200">
-          
             Transaction Ledger
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">Recent Activities</p>
@@ -105,53 +122,64 @@ export default function TransactionTable({
           </thead>
           <tbody className="divide-y divide-white/[0.02] text-sm text-slate-300">
             {currentItems.length > 0 ? (
-              currentItems.map((tx) => (
-                <tr
-                  key={tx.id}
-                  className="hover:bg-white/[0.01] transition-colors group"
-                >
-                  <td className="px-6 py-4 font-medium text-slate-200">
-                    {tx.memberName}
-                  </td>
+              currentItems.map((tx, idx) => {
+                const statusStr = String(tx.status || "").toLowerCase();
+                const isPaid =
+                  statusStr === "paid" ||
+                  statusStr === "completed" ||
+                  statusStr === "succeeded";
+                const isPending = statusStr === "pending";
 
-                  <td
-                    onClick={() => handleOpenInvoice(tx)}
-                    className="px-6 py-4 text-blue-500 hover:text-blue-400 cursor-pointer font-mono text-xs transition-colors underline decoration-blue-500/30 underline-offset-2"
+                return (
+                  <tr
+                    key={tx.id || idx}
+                    className="hover:bg-white/[0.01] transition-colors group"
                   >
-                    {tx.invoiceNo}
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-blue-400">
-                    ${tx.amount}
-                  </td>
-                  <td className="px-6 py-4 text-xs">
-                    <span className="bg-slate-800 px-2 py-1 rounded-md text-slate-400 border border-white/[0.04]">
-                      {tx.method}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-xs text-slate-400 font-mono">
-                    {tx.date}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusStyle(tx.status)}`}
-                    >
-                      {tx.status === "Paid"
-                        ? "● Paid"
-                        : tx.status === "Pending"
-                          ? "● Pending"
-                          : "● Failed"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
+                    <td className="px-6 py-4 font-medium text-slate-200">
+                      {tx.memberName || "N/A"}
+                    </td>
+
+                    <td
                       onClick={() => handleOpenInvoice(tx)}
-                      className="text-xs bg-slate-800 hover:bg-slate-700 border border-white/[0.06] text-slate-300 px-3 py-1.5 rounded-lg transition-all cursor-pointer group-hover:border-blue-500/30"
+                      className="px-6 py-4 text-blue-500 hover:text-blue-400 cursor-pointer font-mono text-xs transition-colors underline decoration-blue-500/30 underline-offset-2"
                     >
-                      View Receipt
-                    </button>
-                  </td>
-                </tr>
-              ))
+                      {tx.invoiceNo || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-blue-400">
+                      ${tx.amount ?? 0}
+                    </td>
+                    <td className="px-6 py-4 text-xs">
+                      <span className="bg-slate-800 px-2 py-1 rounded-md text-slate-400 border border-white/[0.04]">
+                        {tx.method || "Card"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-xs text-slate-400 font-mono">
+                      {tx.date || "N/A"}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusStyle(
+                          tx.status,
+                        )}`}
+                      >
+                        {isPaid
+                          ? "● Paid"
+                          : isPending
+                            ? "● Pending"
+                            : "● Failed"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => handleOpenInvoice(tx)}
+                        className="text-xs bg-slate-800 hover:bg-slate-700 border border-white/[0.06] text-slate-300 px-3 py-1.5 rounded-lg transition-all cursor-pointer group-hover:border-blue-500/30"
+                      >
+                        View Receipt
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td

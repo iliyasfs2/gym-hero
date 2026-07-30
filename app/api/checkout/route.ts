@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     if (!userId) {
       console.error(
-        "❌ Checkout API Error: userId is required but was not provided!",
+        "Checkout API Error: userId is required but was not provided!",
       );
       return NextResponse.json(
         { error: "userId is required to complete payment setup" },

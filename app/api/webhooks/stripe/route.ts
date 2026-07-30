@@ -35,16 +35,16 @@ export async function POST(req: Request) {
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "Webhook verification failed";
-    console.error(`Webhook Verification Error: ${errorMessage}`);
+    console.error(`❌ Webhook Verification Error: ${errorMessage}`);
     return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
 
-  console.log(`Event received: ${event.type}`);
+  console.log(`🔔 Event received: ${event.type}`);
 
   if (event.type === "payment_intent.succeeded") {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
-    console.log("PaymentIntent Metadata:", paymentIntent.metadata);
+    console.log("💳 PaymentIntent Metadata:", paymentIntent.metadata);
 
     const userId = paymentIntent.metadata?.userId;
     const planName = paymentIntent.metadata?.planName || "Subscription Plan";
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    console.log(` Processing subscription for userId: ${userId}`);
+    console.log(`👤 Processing subscription for userId: ${userId}`);
 
     const startDate = new Date();
     const endDate = new Date();
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
     if (subError) {
       console.error("❌ Supabase Subscription Insert Error:", subError.message);
     } else {
-      console.log("Successfully inserted subscription:", subData);
+      console.log("🎉 Successfully inserted subscription:", subData);
     }
 
     const { error: userError } = await supabase
