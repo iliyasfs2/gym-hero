@@ -236,7 +236,7 @@ export default function MemberViewDrawer({
           </div>
         </div>
 
-        <div className="p-6 border-t border-white/[0.08] bg-black/20 grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="p-6 border-t border-white/[0.08] bg-black/20 grid grid-cols-2 gap-2">
           <button
             onClick={() => {
               onClose();
@@ -258,45 +258,6 @@ export default function MemberViewDrawer({
               />
             </svg>
             Edit Member
-          </button>
-
-          <button className="flex items-center justify-center gap-1.5 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-semibold rounded-xl border border-white/[0.08] transition-colors cursor-pointer">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            Renew Plan
-          </button>
-
-          <button className="flex items-center justify-center gap-1.5 py-2.5 bg-sky-600/10 hover:bg-sky-600/20 text-sky-400 text-xs font-semibold rounded-xl border border-sky-500/20 transition-colors cursor-pointer">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <rect
-                x="2"
-                y="5"
-                width="20"
-                height="14"
-                rx="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2 10h20" />
-            </svg>
-            Add Payment
           </button>
 
           <button

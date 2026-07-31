@@ -69,7 +69,7 @@ export default function MembersClientContainer({
           phone: data.phone.trim(),
           plan_name: data.plan,
           price: price,
-          status: "Active",
+          status: "active",
           joined_date: data.startDate
             ? new Date(data.startDate).toISOString()
             : new Date().toISOString(),

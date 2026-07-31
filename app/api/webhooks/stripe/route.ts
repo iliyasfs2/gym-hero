@@ -82,6 +82,41 @@ export async function POST(req: Request) {
       console.log("🎉 Successfully inserted subscription:", subData);
     }
 
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", userId)
+      .maybeSingle();
+
+    const { error: paymentError } = await supabase.from("payments").insert({
+      member_name: profileData?.full_name || "Unknown Member",
+      amount: amount,
+      method: "Online",
+      status: "Paid",
+      invoice_no: `SUB-${paymentIntent.id.slice(-8).toUpperCase()}`,
+    });
+
+    if (paymentError) {
+      console.error("❌ Supabase Payments Insert Error:", paymentError.message);
+    } else {
+      console.log("🎉 Successfully inserted into payments table");
+    }
+
+    const { error: memberSyncError } = await supabase
+      .from("members")
+      .update({
+        plan_name: planName,
+        price: amount,
+        status: "active",
+      })
+      .eq("user_id", userId);
+
+    if (memberSyncError) {
+      console.error("❌ Supabase Members Sync Error:", memberSyncError.message);
+    } else {
+      console.log("🎉 Successfully synced members table with new plan");
+    }
+
     const { error: userError } = await supabase
       .from("profiles")
       .update({

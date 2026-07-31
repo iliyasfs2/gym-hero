@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Dumbbell, Check } from "lucide-react";
 import { NewMemberFormData } from "./types";
 import { Member } from "@/app/components/context/AppContext";
 
@@ -109,8 +110,8 @@ export default function AddMemberModal({
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-xl bg-white/[0.03] p-2 rounded-lg border border-white/[0.05]">
-                          🏋️‍♂️
+                        <span className="bg-blue-500/10 text-blue-400 p-2 rounded-lg border border-blue-500/20">
+                          <Dumbbell size={20} strokeWidth={2} />
                         </span>
                         <div>
                           <p className="text-sm font-semibold text-slate-200">
@@ -133,7 +134,11 @@ export default function AddMemberModal({
                           }`}
                         >
                           {isSelected && (
-                            <span className="text-[9px] text-white">✓</span>
+                            <Check
+                              size={11}
+                              strokeWidth={3}
+                              className="text-white"
+                            />
                           )}
                         </div>
                       </div>

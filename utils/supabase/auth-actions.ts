@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "./server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 
 export async function signUpAction(formData: FormData) {
   const supabase = await createClient();
@@ -8,7 +9,7 @@ export async function signUpAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -18,6 +19,33 @@ export async function signUpAction(formData: FormData) {
 
   if (error) {
     return { success: false, error: error.message };
+  }
+
+  if (data.user?.id) {
+    const serviceSupabase = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+
+    const { error: memberError } = await serviceSupabase
+      .from("members")
+      .insert({
+        user_id: data.user.id,
+        name: email.split("@")[0],
+        email: email,
+        phone: "",
+        plan_name: null,
+        price: 0,
+        status: "active",
+        joined_date: new Date().toISOString(),
+      });
+
+    if (memberError) {
+      console.error(
+        "❌ Error creating member record on signup:",
+        memberError.message,
+      );
+    }
   }
 
   return {

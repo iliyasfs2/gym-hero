@@ -1,40 +1,92 @@
 "use client";
 
 import { addPaymentAction } from "../actions/actions";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { PaymentStatus, Transaction } from "./types";
+import { PaymentStatus } from "./types";
+
+interface Member {
+  id: string;
+  fullName: string;
+}
 
 interface AddPaymentModalProps {
   isOpen: boolean;
   onClose?: () => void;
+  members: Member[];
 }
 
-export default function AddPaymentModal({ isOpen }: AddPaymentModalProps) {
+export default function AddPaymentModal({
+  isOpen,
+  members,
+}: AddPaymentModalProps) {
   const router = useRouter();
 
   const [form, setForm] = useState({
+    userId: "",
     memberName: "",
     amount: "",
     method: "Online" as "Online" | "Card" | "Cash",
     status: "Paid" as PaymentStatus,
   });
 
+  const [searchText, setSearchText] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   if (!isOpen) return null;
+
+  const filteredMembers = members.filter((m) =>
+    m.fullName.toLowerCase().includes(searchText.toLowerCase()),
+  );
+
+  const handleSelectMember = (member: Member) => {
+    setForm({ ...form, userId: member.id, memberName: member.fullName });
+    setSearchText(member.fullName);
+    setIsDropdownOpen(false);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+    setIsDropdownOpen(true);
+    if (form.userId) {
+      setForm({ ...form, userId: "", memberName: "" });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.memberName || !form.amount) return;
+    if (!form.userId || !form.amount) return;
 
     const formData = new FormData();
-    formData.append("memberName", form.memberName);
+    formData.append("userId", form.userId);
     formData.append("amount", form.amount);
     formData.append("method", form.method);
     formData.append("status", form.status);
 
     await addPaymentAction(formData);
 
-    setForm({ memberName: "", amount: "", method: "Online", status: "Paid" });
+    setForm({
+      userId: "",
+      memberName: "",
+      amount: "",
+      method: "Online",
+      status: "Paid",
+    });
+    setSearchText("");
     router.push("/payments");
   };
 
@@ -143,18 +195,47 @@ export default function AddPaymentModal({ isOpen }: AddPaymentModalProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 relative" ref={wrapperRef}>
             <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-              Full Name
+              Member
             </label>
             <input
               type="text"
               required
-              placeholder="e.g. John Doe"
-              value={form.memberName}
-              onChange={(e) => setForm({ ...form, memberName: e.target.value })}
+              autoComplete="off"
+              placeholder="Start typing a name..."
+              value={searchText}
+              onFocus={() => setIsDropdownOpen(true)}
+              onChange={handleSearchChange}
               className="w-full bg-black/20 border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all"
             />
+
+            {form.userId && (
+              <p className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1">
+                ✓ Selected: {form.memberName}
+              </p>
+            )}
+
+            {isDropdownOpen && searchText.length > 0 && !form.userId && (
+              <div className="absolute z-30 mt-1 w-full max-h-56 overflow-y-auto bg-[#181f2e] border border-white/[0.1] rounded-xl shadow-2xl">
+                {filteredMembers.length > 0 ? (
+                  filteredMembers.map((m) => (
+                    <button
+                      type="button"
+                      key={m.id}
+                      onClick={() => handleSelectMember(m)}
+                      className="w-full text-left px-4 py-2.5 text-sm text-slate-200 hover:bg-blue-600/10 hover:text-blue-400 transition-colors cursor-pointer"
+                    >
+                      {m.fullName}
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-4 py-3 text-xs text-slate-500">
+                    No matching member found
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -260,7 +341,8 @@ export default function AddPaymentModal({ isOpen }: AddPaymentModalProps) {
             </button>
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:shadow-[0_4px_20px_rgba(59,130,246,0.5)] cursor-pointer"
+              disabled={!form.userId}
+              className="bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:shadow-[0_4px_20px_rgba(59,130,246,0.5)] cursor-pointer"
             >
               Save
             </button>
