@@ -2,14 +2,24 @@
 
 import React, { createContext, useContext, useState } from "react";
 
+export interface PaymentHistory {
+  date: string;
+  amount: string;
+  status: string;
+}
+
 export interface Member {
   id: string;
+  user_id?: string;
   name: string;
   phone: string;
   plan: string;
   price: number;
   status: "Active" | "Expired" | "Expiring Soon";
   joinDate: string;
+  endDate?: string;
+  daysLeft?: number;
+  payments?: PaymentHistory[];
 }
 
 interface AppContextType {

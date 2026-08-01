@@ -139,7 +139,7 @@ export default function DashboardOverview({
 
             <div className="pt-4 border-t border-white/[0.06] flex items-center justify-center gap-3 mt-4">
               <a
-                href="/profile"
+                href="/user/profile"
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all text-xs font-semibold text-slate-200 hover:scale-[1.02]"
               >
                 <User size={16} className="text-blue-400" />
@@ -147,7 +147,7 @@ export default function DashboardOverview({
               </a>
 
               <a
-                href="/history"
+                href="/user/subscription-history"
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all text-xs font-semibold text-slate-200 hover:scale-[1.02]"
               >
                 <History size={16} className="text-blue-400" />
