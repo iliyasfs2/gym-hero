@@ -51,10 +51,10 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
 
   return (
     <GlowLayout>
-      <div className="flex h-screen w-full bg-[#0b1224] text-white overflow-hidden">
+      <div className="flex h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
         <Sidebar />
 
-        <main className="flex-1 h-full bg-[#0b1224] p-4 md:p-8 space-y-6 overflow-y-auto z-10">
+        <main className="flex-1 h-full bg-[#0a0f1d] p-4 md:p-8 space-y-6 overflow-y-auto z-10">
           <div className="w-full max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-white/[0.04] pb-5">
               <div className="flex items-center gap-3">

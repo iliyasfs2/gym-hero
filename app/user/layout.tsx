@@ -7,9 +7,9 @@ export default function UserLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-[#121824] text-slate-100">
+    <div className="flex min-h-screen bg-[#0a0f1d] text-slate-100">
       <UserSidebar />
-      <main className="flex-1 w-full min-w-0 bg-[#121824] overflow-y-auto">
+      <main className="flex-1 w-full min-w-0 bg-[#0a0f1d] overflow-y-auto">
         {children}
       </main>
     </div>

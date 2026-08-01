@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SubscriptionHistoryClient } from "@/app/user/subscription-history/components/SubscriptionHistoryClient";
 import { SubscriptionRecord } from "@/app/user/subscription-history/components/SubscriptionCard";
-
+import { History } from "lucide-react"
 export const revalidate = 0;
 
 export default async function HistoryPage() {
@@ -76,16 +76,23 @@ export default async function HistoryPage() {
   );
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white p-4 sm:p-6 md:p-10">
+    <main className="min-h-screen bg-[#0a0f1d] text-slate-100 font-sans p-4 md:p-8 ">
       <div className="max-w-5xl mx-auto space-y-6">
-        <header className="flex flex-col gap-1 border-b border-white/10 pb-5">
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            Subscription History
-          </h1>
-          <p className="text-sm text-slate-400">
-            View and manage all your past and active membership plans.
-          </p>
-        </header>
+        <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
+          <div className="space-y-1.5 z-10">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg">
+                <History size={15} />
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                Subscription History
+              </h1>
+            </div>
+            <p className="text-sm text-slate-400">
+              View and manage all your past and active membership plans.
+            </p>
+          </div>
+        </div>
 
         <SubscriptionHistoryClient
           initialSubscriptions={formattedSubscriptions}

@@ -144,10 +144,10 @@ export default function AdminDashboard({
     <GlowLayout>
       <WelcomeToast />
 
-      <div className="flex h-screen w-full bg-[#11151f] text-white overflow-hidden">
+      <div className="flex h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
         <Sidebar />
 
-        <div className="flex-1 h-full bg-[#11151f] px-6 py-6 md:px-12 md:py-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
+        <div className="flex-1 h-full  bg-[#0a0f1d] px-6 py-6 md:px-12 md:py-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
           <div className="w-full max-w-7xl mx-auto">
             <div className="mb-8 border-b border-white/[0.06] pb-5 flex items-center justify-between">
               <div>
@@ -201,7 +201,6 @@ export default function AdminDashboard({
               href="/payments"
               className="block cursor-pointer mb-8 relative group"
             >
-            
               <AnalyticsCharts data={chartData} />
             </Link>
 

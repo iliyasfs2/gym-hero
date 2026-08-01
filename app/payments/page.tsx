@@ -54,10 +54,10 @@ export default async function PaymentsPage({
   const isModalOpen = resolvedParams.modal === "add-payment";
 
   return (
-    <div className="flex min-h-screen bg-[#0b1224] text-slate-100 font-sans antialiased">
+    <div className="flex min-h-screen bg-[#0a0f1d] text-slate-100 font-sans antialiased">
       <Sidebar />
 
-      <div className="flex-1 bg-[#0b1224] p-6 md:p-10 space-y-8 overflow-y-auto">
+      <div className="flex-1 bg-[#0a0f1d] p-6 md:p-10 space-y-8 overflow-y-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/[0.04] pb-6">
           <div>
             <h1 className="text-3xl font-bold text-white tracking-tight">

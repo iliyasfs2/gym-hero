@@ -36,7 +36,6 @@ export default function DashboardOverview({
   return (
     <div className="min-h-screen bg-[#0a0f1d] text-slate-100 font-sans p-4 md:p-8 flex flex-col items-center">
       <div className="w-full max-w-5xl space-y-6">
-        {/* Banner Section */}
         <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
           <div className="space-y-1.5 z-10">
             <div className="flex items-center gap-2">
@@ -71,7 +70,7 @@ export default function DashboardOverview({
           <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
         </div>
 
-        {/* Quick Stats Grid */}
+        
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
           <div className="bg-[#121824] border border-white/[0.06] rounded-2xl p-4 flex items-center gap-3.5 hover:border-white/[0.12] transition-all">
             <div className="p-2.5 bg-blue-600/10 text-blue-400 rounded-xl">

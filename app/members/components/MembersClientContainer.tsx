@@ -170,10 +170,10 @@ export default function MembersClientContainer({
 
   return (
     <GlowLayout>
-      <div className="flex h-screen w-full bg-[#11151f] text-white overflow-hidden">
+      <div className="flex h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
         <Sidebar />
 
-        <main className="flex-1 h-full bg-[#11151f] p-4 md:p-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
+        <main className="flex-1 h-full bg-[#0a0f1d] p-4 md:p-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
           <div className="w-full mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-white/[0.06] pb-5">
               <div>

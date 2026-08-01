@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { ProfileForm } from "@/app/user/profile/profileForm";
+import { ProfileForm } from "@/app/user/profile/components/profileForm";
 
 export const revalidate = 0;
 
@@ -51,7 +51,6 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
-     
       <ProfileForm
         initialData={{
           name: profile?.full_name || "",

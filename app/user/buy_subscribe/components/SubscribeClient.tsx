@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, Zap, Crown, ShieldCheck, LucideIcon } from "lucide-react";
+import { Check, Zap, Crown, ShieldCheck, LucideIcon, CreditCard, } from "lucide-react";
 import PaymentModal from "@/app/user/buy_subscribe/components/PaymentModal";
 
 export interface PlanFromDB {
@@ -141,43 +141,51 @@ export default function SubscribeClient({ plans = [] }: SubscribeClientProps) {
   };
 
   return (
-    <div className="pt-2 pb-14 px-6 md:px-12 max-w-7xl mx-auto min-h-screen flex flex-col justify-between space-y-8">
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
-          Pick Your Power Plan
-        </h1>
-        <p className="text-slate-400 max-w-md mx-auto text-sm md:text-base">
-          No fluff, just pure gains. Choose what fits your routine best.
-        </p>
+    <div className="min-h-screen bg-[#0a0f1d] text-slate-100 font-sans p-4 md:p-5 flex flex-col items-center">
+      <div className="w-full max-w-5xl space-y-6">
+        <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
+          <div className="space-y-1.5 z-10">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg">
+                <CreditCard size={15} />
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                Pick Your Power Plan
+              </h1>
+            </div>
+            <p className="text-slate-400 max-w-md mx-auto text-sm md:text-base">
+              No fluff, just pure gains. Choose what fits your routine best.
+            </p>
+          </div>
+        </div>
+        {plans.length === 0 ? (
+          <div className="bg-[#121824] border border-white/[0.06] rounded-3xl p-16 text-center text-slate-400 my-auto">
+            No active plans available right now. Check back soon!
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch flex-1">
+            {plans.map((plan, index) => (
+              <PlanCard
+                key={plan.id}
+                plan={plan}
+                index={index}
+                isSelected={selectedPlan === plan.id}
+                onSelect={setSelectedPlan}
+                onPurchase={handlePurchase}
+              />
+            ))}
+          </div>
+        )}
+
+        {activePlan && (
+          <PaymentModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            amount={activePlan.price}
+            planName={activePlan.name}
+          />
+        )}
       </div>
-
-      {plans.length === 0 ? (
-        <div className="bg-[#121824] border border-white/[0.06] rounded-3xl p-16 text-center text-slate-400 my-auto">
-          No active plans available right now. Check back soon!
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch flex-1">
-          {plans.map((plan, index) => (
-            <PlanCard
-              key={plan.id}
-              plan={plan}
-              index={index}
-              isSelected={selectedPlan === plan.id}
-              onSelect={setSelectedPlan}
-              onPurchase={handlePurchase}
-            />
-          ))}
-        </div>
-      )}
-
-      {activePlan && (
-        <PaymentModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          amount={activePlan.price}
-          planName={activePlan.name}
-        />
-      )}
     </div>
   );
 }
