@@ -12,18 +12,35 @@ import {
   Eye,
   EyeOff,
   Loader2,
+  User,
+  Phone,
+  Calendar,
 } from "lucide-react";
-import { signInAction, signUpAction } from "@/utils/supabase/auth-actions";
+import {
+  signInAction,
+  signUpAction,
+  completeProfileAction,
+} from "@/utils/supabase/auth-actions";
 import { signInWithGoogle } from "./actions";
+
+type AuthStage = "method" | "credentials" | "profile";
 
 export function LoginForm() {
   const router = useRouter();
-  const [step, setStep] = useState<1 | 2>(1);
+  const [stage, setStage] = useState<AuthStage>("method");
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+
+  const [profileData, setProfileData] = useState({
+    fullName: "",
+    age: "",
+    phone: "",
+  });
+
+  const signUpStepIndex = stage === "profile" ? 2 : 1;
 
   const handleGoogle = async () => {
     try {
@@ -38,14 +55,17 @@ export function LoginForm() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCredentialsSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => {
     e.preventDefault();
     setMsg(null);
     const fd = new FormData(e.currentTarget);
     const email = fd.get("email") as string;
     const pass = fd.get("password") as string;
 
-    if (!email?.includes("@")) return setMsg("Enter a valid email address.");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return setMsg("Enter a valid email address.");
     if (!pass || pass.length < 6)
       return setMsg("Password must be at least 6 characters.");
 
@@ -53,52 +73,92 @@ export function LoginForm() {
     const result = await (isSignUp ? signUpAction : signInAction)(fd);
     setLoading(false);
 
-    if (!result.success) setMsg(result.error || "Auth failed");
-    else {
+    if (!result.success) {
+      setMsg(result.error || "Auth failed");
+      return;
+    }
+
+    if (isSignUp) {
+      setStage("profile");
+    } else {
       router.push("/user/dashboard");
       router.refresh();
     }
   };
 
+  const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setMsg(null);
+
+    if (!profileData.fullName.trim()) {
+      return setMsg("Please enter your full name.");
+    }
+
+    const fd = new FormData();
+    fd.append("fullName", profileData.fullName.trim());
+    fd.append("age", profileData.age);
+    fd.append("phone", profileData.phone);
+
+    setLoading(true);
+    const result = await completeProfileAction(fd);
+    setLoading(false);
+
+    if (!result.success) {
+      setMsg(result.error || "Failed to save profile");
+      return;
+    }
+
+    router.push("/user/dashboard");
+    router.refresh();
+  };
+
   return (
     <div className="w-full max-w-md flex flex-col items-center">
-      {/* STEPPER */}
-      <div className="flex items-center gap-3 mb-6">
-        <div
-          className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white ${step === 2 ? "bg-emerald-500" : "bg-blue-600"}`}
-        >
-          {step === 2 ? <Check size={18} /> : "1"}
-        </div>
-        <div className="h-1 w-20 bg-slate-800 rounded-full overflow-hidden">
+      {isSignUp && (
+        <div className="flex items-center gap-3 mb-6">
           <div
-            className={`h-full bg-emerald-500 transition-all ${step === 2 ? "w-full" : "w-0"}`}
-          />
+            className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white shrink-0 transition-all ${
+              signUpStepIndex > 1 ? "bg-emerald-500" : "bg-blue-600"
+            }`}
+          >
+            {signUpStepIndex > 1 ? <Check size={18} /> : "1"}
+          </div>
+          <div className="h-1 w-20 bg-slate-800 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-emerald-500 transition-all duration-300 ${
+                signUpStepIndex > 1 ? "w-full" : "w-0"
+              }`}
+            />
+          </div>
+          <div
+            className={`w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm text-white shrink-0 transition-all ${
+              signUpStepIndex === 2
+                ? "bg-blue-600 border-blue-600"
+                : "bg-slate-900 border-slate-800"
+            }`}
+          >
+            2
+          </div>
         </div>
-        <div
-          className={`w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm text-white ${step === 2 ? "bg-blue-600 border-blue-600" : "bg-slate-900 border-slate-800"}`}
-        >
-          2
-        </div>
-      </div>
+      )}
 
-      {/* CARD */}
-      <div className="w-full h-[410px] bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col justify-between">
+      <div className="w-full min-h-[410px] bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col justify-between">
         <div className="text-center font-black tracking-wider text-xl uppercase">
           <span className="text-white">GYM</span>
           <span className="text-blue-500">HERO</span>
         </div>
 
         <AnimatePresence mode="wait">
-          {step === 1 ? (
+          {stage === "method" && (
             <motion.div
-              key="s1"
+              key="method"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="space-y-4 my-auto"
             >
               <h2 className="text-2xl font-bold text-white text-center">
-                Welcome Back
+                {isSignUp ? "Create Account" : "Welcome Back"}
               </h2>
 
               <button
@@ -143,7 +203,7 @@ export function LoginForm() {
 
               <button
                 type="button"
-                onClick={() => setStep(2)}
+                onClick={() => setStage("credentials")}
                 className="w-full bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-blue-600/30"
               >
                 <Mail size={18} />
@@ -156,15 +216,32 @@ export function LoginForm() {
                   {msg}
                 </div>
               )}
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setMsg(null);
+                  }}
+                  className="text-xs text-slate-400 hover:text-blue-400"
+                >
+                  {isSignUp
+                    ? "Already have an account? Sign In"
+                    : "Don't have an account? Sign Up"}
+                </button>
+              </div>
             </motion.div>
-          ) : (
+          )}
+
+          {stage === "credentials" && (
             <motion.form
-              key="s2"
+              key="credentials"
               noValidate
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onSubmit={handleSubmit}
+              onSubmit={handleCredentialsSubmit}
               className="space-y-4 my-auto"
             >
               <h2 className="text-xl font-bold text-white text-center">
@@ -214,7 +291,7 @@ export function LoginForm() {
                 <button
                   type="button"
                   onClick={() => {
-                    setStep(1);
+                    setStage("method");
                     setMsg(null);
                   }}
                   className="w-1/3 bg-slate-950 border border-white/10 text-slate-300 py-3 rounded-xl text-sm flex items-center justify-center gap-1"
@@ -250,6 +327,94 @@ export function LoginForm() {
                     : "Don't have an account? Sign Up"}
                 </button>
               </div>
+            </motion.form>
+          )}
+
+          {stage === "profile" && (
+            <motion.form
+              key="profile"
+              noValidate
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onSubmit={handleProfileSubmit}
+              className="space-y-4 my-auto"
+            >
+              <h2 className="text-xl font-bold text-white text-center">
+                Complete Your Profile
+              </h2>
+              <p className="text-xs text-slate-400 text-center -mt-2">
+                Tell us a bit about yourself
+              </p>
+
+              <div className="relative">
+                <User
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  value={profileData.fullName}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, fullName: e.target.value })
+                  }
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="relative">
+                <Calendar
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                  size={18}
+                />
+                <input
+                  type="number"
+                  placeholder="Age"
+                  value={profileData.age}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, age: e.target.value })
+                  }
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="relative">
+                <Phone
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Phone Number"
+                  value={profileData.phone}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, phone: e.target.value })
+                  }
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {msg && (
+                <div className="text-xs p-2.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-300 text-center">
+                  {msg}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/30 disabled:opacity-50"
+              >
+                {loading ? (
+                  <Loader2 className="animate-spin" size={18} />
+                ) : (
+                  <>
+                    <span>Finish Setup</span>
+                    <ArrowRight size={16} />
+                  </>
+                )}
+              </button>
             </motion.form>
           )}
         </AnimatePresence>

@@ -20,6 +20,7 @@ export interface ProfileHeaderProps {
   isEditing: boolean;
   onEditToggle: () => void;
   onCancel: () => void;
+  onSignOut: () => void;
 }
 
 export interface ProfileCardProps {

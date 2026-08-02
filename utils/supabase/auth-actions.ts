@@ -50,8 +50,55 @@ export async function signUpAction(formData: FormData) {
 
   return {
     success: true,
-    message: "Registration successful. Please check your email or sign in.",
+    message: "Account created successfully.",
   };
+}
+
+export async function completeProfileAction(formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  const fullName = formData.get("fullName") as string;
+  const age = formData.get("age") as string;
+  const phone = formData.get("phone") as string;
+
+  const { error: profileError } = await supabase.from("profiles").upsert({
+    id: user.id,
+    full_name: fullName,
+    age: age ? Number(age) : null,
+    phone: phone,
+    updated_at: new Date().toISOString(),
+  });
+
+  if (profileError) {
+    return { success: false, error: profileError.message };
+  }
+
+  const serviceSupabase = createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+
+  const { error: memberSyncError } = await serviceSupabase
+    .from("members")
+    .update({
+      name: fullName,
+      phone: phone,
+    })
+    .eq("user_id", user.id);
+
+  if (memberSyncError) {
+    console.error("❌ Error syncing members table:", memberSyncError.message);
+  }
+
+  return { success: true };
 }
 
 export async function signInAction(formData: FormData) {

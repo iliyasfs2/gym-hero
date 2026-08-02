@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (user) {
+  if (user && (isLoginPage || isAdminRoute)) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")

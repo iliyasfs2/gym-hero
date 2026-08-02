@@ -26,6 +26,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
     handleChange,
     handleSubmit,
     handleCancel,
+    handleSignOut,
   } = useProfileForm(initialData, userId);
 
   return (
@@ -52,6 +53,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
         isEditing={isEditing}
         onEditToggle={() => setIsEditing(true)}
         onCancel={handleCancel}
+        onSignOut={handleSignOut}
       />
 
       <form onSubmit={handleSubmit} className="space-y-8">

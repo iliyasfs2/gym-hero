@@ -1,6 +1,7 @@
 "use client";
 
-import { Edit3, X, Dumbbell, ShieldCheck } from "lucide-react";
+import React from "react";
+import { Edit3, X, Dumbbell, ShieldCheck, LogOut } from "lucide-react";
 import { ProfileHeaderProps } from "./types";
 
 export function ProfileHeader({
@@ -8,6 +9,7 @@ export function ProfileHeader({
   isEditing,
   onEditToggle,
   onCancel,
+  onSignOut,
 }: ProfileHeaderProps) {
   const userInitials = formData.name
     ? formData.name
@@ -48,12 +50,20 @@ export function ProfileHeader({
           </div>
         </div>
 
-        <div>
+        <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
+          <button
+            type="button"
+            onClick={onSignOut}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 font-bold text-sm rounded-xl transition-all active:scale-95 cursor-pointer"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Sign Out</span>
+          </button>
           {!isEditing ? (
             <button
               type="button"
               onClick={onEditToggle}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-white font-bold text-sm rounded-xl transition-all active:scale-95 cursor-pointer w-full sm:w-auto"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-3 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-white font-bold text-sm rounded-xl transition-all active:scale-95 cursor-pointer"
             >
               <Edit3 className="w-5 h-5 text-emerald-400" />
               <span>Edit Profile</span>
@@ -62,12 +72,13 @@ export function ProfileHeader({
             <button
               type="button"
               onClick={onCancel}
-              className="flex items-center justify-center gap-2 px-5 py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 font-bold text-sm rounded-xl transition-all active:scale-95 cursor-pointer w-full sm:w-auto"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 font-bold text-sm rounded-xl transition-all active:scale-95 cursor-pointer"
             >
               <X className="w-5 h-5" />
               <span>Cancel</span>
             </button>
           )}
+
         </div>
       </div>
     </div>
