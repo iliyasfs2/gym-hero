@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { useRouter } from "next/navigation";
 import { ProfileData, StatusState } from "./types";
 
 export function useProfileForm(initialData: ProfileData, userId: string) {
@@ -12,6 +13,8 @@ export function useProfileForm(initialData: ProfileData, userId: string) {
     type: null,
     message: "",
   });
+
+  const router = useRouter();
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -101,6 +104,12 @@ export function useProfileForm(initialData: ProfileData, userId: string) {
     setFormData(initialData);
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
+
   return {
     formData,
     isEditing,
@@ -111,5 +120,6 @@ export function useProfileForm(initialData: ProfileData, userId: string) {
     handleChange,
     handleSubmit,
     handleCancel,
+    handleSignOut, 
   };
 }
