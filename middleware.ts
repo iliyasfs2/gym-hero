@@ -37,14 +37,15 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
-  const isLoginPage = pathname.startsWith("/login");
-  const isAdminRoute = pathname.startsWith("/dashboard");
-  const isUserRoute = pathname.startsWith("/user");
+ const pathname = request.nextUrl.pathname;
+ const isLoginPage = pathname.startsWith("/login");
+ const isAdminRoute = pathname.startsWith("/dashboard");
+ const isUserRoute = pathname.startsWith("/user");
+ const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
 
-  if (!user && (isAdminRoute || isUserRoute)) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
+ if (!user && (isAdminRoute || isUserRoute || isCompleteProfileRoute)) {
+   return NextResponse.redirect(new URL("/login", request.url));
+ }
 
   if (user && (isLoginPage || isAdminRoute)) {
     const { data: profile } = await supabase
@@ -72,5 +73,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/user/:path*", "/login"],
+  matcher: ["/dashboard/:path*", "/user/:path*", "/login", "/complete-profile"],
 };

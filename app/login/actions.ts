@@ -1,15 +1,16 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(mode: "signin" | "signup") {
   const supabase = await createClient();
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
+      redirectTo: `${siteUrl}/auth/callback?mode=${mode}`,
     },
   });
 
@@ -17,7 +18,5 @@ export async function signInWithGoogle() {
     return { error: error.message };
   }
 
-  if (data.url) {
-    redirect(data.url);
-  }
+  return { url: data.url };
 }

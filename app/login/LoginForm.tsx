@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,6 +15,7 @@ import {
   User,
   Phone,
   Calendar,
+  AlertCircle,
 } from "lucide-react";
 import {
   signInAction,
@@ -41,16 +42,38 @@ export function LoginForm() {
   });
 
   const signUpStepIndex = stage === "profile" ? 2 : 1;
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const errorParam = params.get("error");
+
+    if (errorParam === "no-account") {
+      setMsg("No account found with this email. Please sign up first.");
+      setIsSignUp(false);
+    } else if (errorParam === "already-exists") {
+      setMsg(
+        "An account with this email already exists. Try signing in instead.",
+      );
+      setIsSignUp(false);
+    } else if (errorParam === "auth-failed") {
+      setMsg("Authentication failed. Please try again.");
+    }
+  }, []);
 
   const handleGoogle = async () => {
     try {
       setGoogleLoading(true);
       setMsg(null);
-      const res = await signInWithGoogle();
-      if (res?.error) setMsg(res.error);
+      const res = await signInWithGoogle(isSignUp ? "signup" : "signin");
+      if (res?.error) {
+        setMsg(res.error);
+        setGoogleLoading(false);
+        return;
+      }
+      if (res?.url) {
+        window.location.href = res.url;
+      }
     } catch {
       setMsg("Google sign in failed.");
-    } finally {
       setGoogleLoading(false);
     }
   };
@@ -212,8 +235,9 @@ export function LoginForm() {
               </button>
 
               {msg && (
-                <div className="text-xs p-2.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-300 text-center">
-                  {msg}
+                <div className="flex items-center gap-2 text-xs p-2.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-300">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{msg}</span>
                 </div>
               )}
 
@@ -282,8 +306,9 @@ export function LoginForm() {
               </div>
 
               {msg && (
-                <div className="text-xs p-2.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-300 text-center">
-                  {msg}
+                <div className="flex items-center gap-2 text-xs p-2.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-300">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{msg}</span>
                 </div>
               )}
 
@@ -396,8 +421,9 @@ export function LoginForm() {
               </div>
 
               {msg && (
-                <div className="text-xs p-2.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-300 text-center">
-                  {msg}
+                <div className="flex items-center gap-2 text-xs p-2.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-300">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{msg}</span>
                 </div>
               )}
 
