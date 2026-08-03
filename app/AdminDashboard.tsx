@@ -139,35 +139,36 @@ export default function AdminDashboard({
       link: "/payments",
     },
   ];
-
   return (
     <GlowLayout>
       <WelcomeToast />
 
       <div className="flex h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
         <Sidebar />
-
-        <div className="flex-1 h-full  bg-[#0a0f1d] px-6 py-6 md:px-12 md:py-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
-          <div className="w-full max-w-7xl mx-auto">
-            <div className="mb-8 border-b border-white/[0.06] pb-5 flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">
-                  Dashboard Overview
-                </h1>
-                <p className="text-xs text-slate-400 mt-1">
-                  Real-time gym performance and analytics
-                </p>
+        <div className="flex-1 h-full bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
+          <div className="w-full max-w-7xl mx-auto px-6 py-6 md:px-12 md:py-8 space-y-6">
+            <div className="w-full">
+              <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
+                <div className="space-y-1.5 z-10">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                      Dashboard Overview
+                    </h1>
+                  </div>
+                  <p className="text-slate-400 max-w-md text-sm md:text-base">
+                    Real-time gym performance and analytics
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
               {stats.map((stat: StatItem) => (
                 <Link
                   key={stat.id}
                   href={stat.link}
                   className="relative overflow-hidden rounded-2xl p-5 shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-emerald-500/20 hover:bg-white/[0.03] block cursor-pointer border border-white/[0.08] bg-[#11151f]"
                 >
-                  {/* soft blue glow accent, top-right, matching the profile-panel look */}
                   <div
                     className="pointer-events-none absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20 blur-2xl"
                     style={{
@@ -199,7 +200,7 @@ export default function AdminDashboard({
 
             <Link
               href="/payments"
-              className="block cursor-pointer mb-8 relative group"
+              className="block cursor-pointer relative group"
             >
               <AnalyticsCharts data={chartData} />
             </Link>

@@ -61,7 +61,15 @@ export default function MemberTable({
                       ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
                       : "bg-amber-500/10 text-amber-400 border-amber-500/20";
 
-                const avatarLetter = member.name.charAt(0).toUpperCase();
+                const avatarLetter = member.name
+                  ? member.name.charAt(0).toUpperCase()
+                  : "?";
+
+                const memberName = member.name || "Unknown Member";
+                const memberPhone = member.phone || "-";
+                const memberPlan = member.plan || "";
+                const memberStatus = member.status || "-";
+                const memberJoinDate = member.joinDate || "-";
 
                 return (
                   <tr
@@ -73,25 +81,25 @@ export default function MemberTable({
                         {avatarLetter}
                       </div>
                       <span className="font-medium text-sm text-slate-200 group-hover:text-white transition-colors">
-                        {member.name}
+                        {memberName}
                       </span>
                     </td>
 
                     <td className="p-4 text-sm text-slate-400 font-mono">
-                      {member.phone}
+                      {memberPhone}
                     </td>
 
                     <td className="p-4">
                       <span
                         className={`text-xs px-2.5 py-1 rounded-lg border font-medium ${
-                          member.plan.toLowerCase().includes("gold")
+                          memberPlan.toLowerCase().includes("gold")
                             ? "bg-amber-500/5 text-amber-300 border-amber-500/10"
                             : "bg-slate-500/5 text-slate-300 border-slate-500/10"
                         }`}
                       >
-                        {member.plan.includes("(")
-                          ? member.plan.split(" ")[0]
-                          : member.plan}
+                        {memberPlan.includes("(")
+                          ? memberPlan.split(" ")[0]
+                          : memberPlan}
                       </span>
                     </td>
 
@@ -100,12 +108,12 @@ export default function MemberTable({
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${statusStyles}`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                        {member.status}
+                        {memberStatus}
                       </span>
                     </td>
 
                     <td className="p-4 text-sm text-slate-400">
-                      {member.joinDate}
+                      {memberJoinDate}
                     </td>
 
                     <td className="p-4 text-right">

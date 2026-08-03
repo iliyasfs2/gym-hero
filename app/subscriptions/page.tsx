@@ -53,28 +53,28 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
     <GlowLayout>
       <div className="flex h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
         <Sidebar />
-
-        <main className="flex-1 h-full bg-[#0a0f1d] p-4 md:p-8 space-y-6 overflow-y-auto z-10">
-          <div className="w-full max-w-6xl mx-auto">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-white/[0.04] pb-5">
-              <div className="flex items-center gap-3">
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
-                    Subscriptions
-                  </h1>
+        <div className="flex-1 h-full bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
+          <div className="w-full max-w-7xl mx-auto px-6 py-6 md:px-12 md:py-8 space-y-6">
+            <div className="w-full">
+              <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
+                <div className="space-y-1.5 z-10">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                      Subscriptions
+                    </h1>
+                  </div>
                   <p className="text-xs text-slate-400 mt-0.5">
                     Manage gym membership packages and pricing
                   </p>
                 </div>
+                <Link
+                  href="?modal=add-plan"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-[0_4px_20px_rgba(59,130,246,0.25)] hover:shadow-[0_4px_25px_rgba(59,130,246,0.45)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border border-white/10"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add New Plan</span>
+                </Link>
               </div>
-
-              <Link
-                href="?modal=add-plan"
-                className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg shadow-blue-600/25 flex items-center gap-2 active:scale-95"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add New Plan</span>
-              </Link>
             </div>
 
             {plans && plans.length > 0 ? (
@@ -176,7 +176,7 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
                 </p>
                 <Link
                   href="?modal=add-plan"
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg shadow-blue-600/25 flex items-center gap-2 active:scale-95"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-[0_4px_20px_rgba(59,130,246,0.25)] hover:shadow-[0_4px_25px_rgba(59,130,246,0.45)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border border-white/10"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Create First Plan</span>
@@ -184,7 +184,7 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
               </div>
             )}
           </div>
-        </main>
+        </div>
 
         <AddPlanModal isOpen={activeModal === "add-plan"} />
 

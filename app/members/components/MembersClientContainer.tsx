@@ -167,42 +167,46 @@ export default function MembersClientContainer({
       setEditingMember(null);
     }
   };
-
   return (
     <GlowLayout>
       <div className="flex h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
         <Sidebar />
 
-        <main className="flex-1 h-full bg-[#0a0f1d] p-4 md:p-8 space-y-6 overflow-y-auto z-10 transition-all duration-300">
-          <div className="w-full mx-auto">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-white/[0.06] pb-5">
-              <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">
-                  Gym Members
-                </h1>
-                <p className="text-xs text-slate-400 mt-1">
-                  Manage, search, and filter registered athletes
-                </p>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer shadow-lg shadow-sky-600/20 flex items-center gap-2"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
+        <div className="flex-1 h-full bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
+          <div className="w-full max-w-7xl mx-auto px-6 py-6 md:px-12 md:py-8 space-y-6">
+            <div className="w-full">
+              <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
+                <div className="space-y-1.5 z-10">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                      Gym Members
+                    </h1>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Manage, search, and filter registered athletes
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-[0_4px_20px_rgba(59,130,246,0.25)] hover:shadow-[0_4px_25px_rgba(59,130,246,0.45)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border border-white/10"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-                <span>Add Member</span>
-              </button>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  <span>Add Member</span>
+                </button>
+              </div>
             </div>
 
             <MemberFilters
@@ -227,7 +231,7 @@ export default function MembersClientContainer({
               }
             />
           </div>
-        </main>
+        </div>
       </div>
 
       {isModalOpen && (
