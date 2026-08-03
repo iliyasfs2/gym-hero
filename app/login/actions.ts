@@ -5,7 +5,11 @@ import { createClient } from "@/utils/supabase/server";
 export async function signInWithGoogle(mode: "signin" | "signup") {
   const supabase = await createClient();
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.NODE_ENV === "production"
+      ? "https://gymheroo.netlify.app"
+      : "http://localhost:3000");
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
