@@ -19,13 +19,43 @@ export interface ChartDataPoint {
   registrations: number;
 }
 
+export interface RecentActivity {
+  id: string;
+  name: string;
+  plan: string;
+  price?: number;
+  status: "active" | "inactive";
+  date: string;
+}
+
 interface AnalyticsChartsProps {
   data: ChartDataPoint[];
 }
 
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
 export default function AnalyticsCharts({
-  data,
+  data = [],
 }: AnalyticsChartsProps): JSX.Element {
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-48 bg-[#141822] rounded-2xl border border-white/[0.08] text-slate-400 text-sm">
+        No analytics data available.
+      </div>
+    );
+  }
+
+  const parseNumericValue = (val: unknown): number => {
+    if (Array.isArray(val)) {
+      return Number(val[0] ?? 0);
+    }
+    return Number(val ?? 0);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       <div className="bg-[#141822] p-6 rounded-2xl shadow-xl border border-white/[0.08]">
@@ -77,7 +107,7 @@ export default function AnalyticsCharts({
                 stroke="#64748b"
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(val: number) => `$${val.toLocaleString()}`}
               />
               <Tooltip
                 contentStyle={{
@@ -87,8 +117,8 @@ export default function AnalyticsCharts({
                   color: "#fff",
                 }}
                 itemStyle={{ color: "#60a5fa" }}
-                formatter={(value: number) => [
-                  `$${value.toLocaleString()}`,
+                formatter={(value: unknown) => [
+                  currencyFormatter.format(parseNumericValue(value)),
                   "Revenue",
                 ]}
               />
@@ -131,7 +161,6 @@ export default function AnalyticsCharts({
             </svg>
           </div>
         </div>
-
         <div className="h-[260px] w-full text-xs font-mono">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -153,8 +182,8 @@ export default function AnalyticsCharts({
                   color: "#fff",
                 }}
                 itemStyle={{ color: "#60a5fa" }}
-                formatter={(value: number) => [
-                  `${value} athletes`,
+                formatter={(value: unknown) => [
+                  `${parseNumericValue(value).toLocaleString()} athletes`,
                   "Registrations",
                 ]}
               />

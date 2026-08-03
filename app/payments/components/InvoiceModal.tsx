@@ -27,6 +27,8 @@ export default function InvoiceModal({
     }
   };
 
+  const formattedAmount = Number(transaction.amount || 0).toLocaleString();
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
       <div
@@ -41,7 +43,7 @@ export default function InvoiceModal({
               Receipt / Invoice
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              {transaction.invoiceNo}
+              {transaction.invoiceNo || `#INV-${transaction.id}`}
             </p>
           </div>
           <button
@@ -78,7 +80,7 @@ export default function InvoiceModal({
           <div className="flex justify-between text-sm">
             <span className="text-slate-400">Payment Method:</span>
             <span className="font-medium text-slate-300">
-              {transaction.method}
+              {transaction.method || "N/A"}
             </span>
           </div>
           <div className="flex justify-between text-sm">
@@ -92,7 +94,7 @@ export default function InvoiceModal({
             Total Amount
           </span>
           <span className="text-2xl font-bold text-blue-400 tracking-tight">
-            ${transaction.amount.toLocaleString()}
+            ${formattedAmount}
           </span>
         </div>
 
@@ -105,4 +107,4 @@ export default function InvoiceModal({
       </div>
     </div>
   );
-} 
+}

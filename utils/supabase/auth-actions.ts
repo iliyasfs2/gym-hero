@@ -47,7 +47,7 @@ export async function ensureUserRecords(
 ) {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceRoleKey) {
-    console.warn("⚠️ SUPABASE_SERVICE_ROLE_KEY is missing in env variables.");
+    console.warn(" SUPABASE_SERVICE_ROLE_KEY is missing in env variables.");
     return;
   }
 
@@ -56,7 +56,6 @@ export async function ensureUserRecords(
     serviceRoleKey,
   );
 
-  // ۱. بررسی یا ایجاد رکورد در جدول members
   const { data: existingMember } = await serviceSupabase
     .from("members")
     .select("id")
@@ -85,7 +84,6 @@ export async function ensureUserRecords(
     }
   }
 
-  // ۲. بررسی یا ایجاد رکورد در جدول profiles
   const { data: existingProfile } = await serviceSupabase
     .from("profiles")
     .select("id")
@@ -116,12 +114,12 @@ export async function signUpAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  // ۱. ساخت کاربر در Supabase Auth
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
     },
   });
 
@@ -137,18 +135,16 @@ export async function signUpAction(formData: FormData) {
     };
   }
 
-  // ۲. ایجاد نشست فوری برای ست شدن کوکی‌ها
   await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
-  // ۳. اطمینان از ساخت رکوردهای پایه در دیتابیس
   await ensureUserRecords(data.user.id, email, email.split("@")[0]);
 
   return {
     success: true,
-    userId: data.user.id, // 👈 برای استفاده در فرانت‌اند
+    userId: data.user.id,
     message: "Account created successfully.",
   };
 }
@@ -156,12 +152,10 @@ export async function signUpAction(formData: FormData) {
 export async function completeProfileAction(formData: FormData) {
   const supabase = await createClient();
 
-  // ۱. دریافت کاربر از سشن جاری
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // ۲. در صورت عدم وجود سشن، خواندن userId مستقیم از FormData
   const passedUserId = formData.get("userId") as string;
   const targetUserId = user?.id || passedUserId;
 
@@ -173,13 +167,11 @@ export async function completeProfileAction(formData: FormData) {
   const age = formData.get("age") as string;
   const phone = formData.get("phone") as string;
 
-  // استفاده از کلاینت عمومی یا Service Role برای اطمینان از انجام عملیات
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const dbClient = serviceRoleKey
     ? createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
     : supabase;
 
-  // به‌روزرسانی یا ایجاد پروفایل
   const { error: profileError } = await dbClient.from("profiles").upsert({
     id: targetUserId,
     full_name: fullName,
@@ -192,7 +184,6 @@ export async function completeProfileAction(formData: FormData) {
     return { success: false, error: mapAuthError(profileError.message) };
   }
 
-  // همگام‌سازی جدول members
   if (serviceRoleKey) {
     const serviceSupabase = createServiceClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

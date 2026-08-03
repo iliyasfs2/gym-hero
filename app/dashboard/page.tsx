@@ -54,14 +54,23 @@ export default async function DashboardPage() {
     return sum;
   }, 0);
 
-  const recentActivities = safeMembers.slice(0, 5).map((m) => ({
-    id: m.id,
-    name: m.name,
-    plan: m.plan_name || "Basic",
+  const recentActivities: Array<{
+    id: string;
+    name: string;
+    plan: string;
+    price: number;
+    status: "Active" | "Inactive";
+    date: string;
+  }> = safeMembers.slice(0, 5).map((m) => ({
+    id: String(m.id ?? ""),
+    name: String(m.name ?? ""),
+    plan: String(m.plan_name || "Basic"),
     price: Number(m.price) || 0,
-    status: m.status?.toLowerCase() === "expired" ? "Expired" : "Active",
+    status: (m.status?.toLowerCase() === "active" ? "Active" : "Inactive") as
+      | "Active"
+      | "Inactive",
     date: m.joined_date
-      ? m.joined_date.split("T")[0]
+      ? String(m.joined_date).split("T")[0]
       : new Date().toISOString().split("T")[0],
   }));
 

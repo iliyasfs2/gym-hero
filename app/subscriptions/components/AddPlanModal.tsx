@@ -7,9 +7,11 @@ import { addPlanAction } from "../actions/actions";
 
 interface AddPlanModalProps {
   isOpen: boolean;
+  onClose?: () => void;
 }
 
-export default function AddPlanModal({ isOpen }: AddPlanModalProps) {
+
+export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     price: "",

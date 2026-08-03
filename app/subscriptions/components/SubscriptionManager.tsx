@@ -15,7 +15,7 @@ export default function SubscriptionManager() {
         + Add New Plan
       </button>
 
-      <AddPlanModal show={showModal} onClose={() => setShowModal(false)} />
+      <AddPlanModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </>
   );
 }

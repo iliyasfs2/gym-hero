@@ -222,7 +222,9 @@ export default function MembersClientContainer({
                 setSelectedDeleteId(id);
                 setIsDeleteOpen(true);
               }}
-              onViewClick={(member) => setViewingMember(member)}
+              onViewClick={(member) =>
+                setViewingMember(member as unknown as DetailedMember)
+              }
             />
           </div>
         </main>

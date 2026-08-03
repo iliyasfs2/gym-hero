@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -37,15 +37,15 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
- const pathname = request.nextUrl.pathname;
- const isLoginPage = pathname.startsWith("/login");
- const isAdminRoute = pathname.startsWith("/dashboard");
- const isUserRoute = pathname.startsWith("/user");
- const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
+  const pathname = request.nextUrl.pathname;
+  const isLoginPage = pathname.startsWith("/login");
+  const isAdminRoute = pathname.startsWith("/dashboard");
+  const isUserRoute = pathname.startsWith("/user");
+  const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
 
- if (!user && (isAdminRoute || isUserRoute || isCompleteProfileRoute)) {
-   return NextResponse.redirect(new URL("/login", request.url));
- }
+  if (!user && (isAdminRoute || isUserRoute || isCompleteProfileRoute)) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   if (user && (isLoginPage || isAdminRoute)) {
     const { data: profile } = await supabase

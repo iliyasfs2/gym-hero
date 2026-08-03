@@ -240,7 +240,7 @@ export function SubscriptionCard({
               >
                 {isActive
                   ? `${daysLeft} days remaining (${100 - percent}% left)`
-                  : `Expired ${daysAgo > 0 ? `${daysAgo} days ago` : ""}`}
+                  : `Expired ${(daysAgo ?? 0) > 0 ? `${daysAgo} days ago` : ""}`}
               </span>
             </div>
 
