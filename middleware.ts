@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export default async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -38,16 +38,20 @@ export default async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
+  const isRootPage = pathname === "/";
   const isLoginPage = pathname.startsWith("/login");
   const isAdminRoute = pathname.startsWith("/dashboard");
   const isUserRoute = pathname.startsWith("/user");
   const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
 
-  if (!user && (isAdminRoute || isUserRoute || isCompleteProfileRoute)) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (!user) {
+    if (!isLoginPage) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    return response;
   }
 
-  if (user && (isLoginPage || isAdminRoute)) {
+  if (user) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -56,7 +60,7 @@ export default async function proxy(request: NextRequest) {
 
     const role = profile?.role || "user";
 
-    if (isLoginPage) {
+    if (isRootPage || isLoginPage) {
       if (role === "admin") {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       } else {
@@ -73,5 +77,7 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/user/:path*", "/login", "/complete-profile"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
