@@ -12,7 +12,7 @@ interface StatItem {
   id: number;
   title: string;
   value: string;
-  icon: JSX.Element;
+  icon: React.ReactElement;
   change: string;
   color: string;
   iconBg: string;
