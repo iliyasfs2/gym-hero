@@ -38,38 +38,64 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isRootPage = pathname === "/";
+
+  const redirectWithCookies = (targetUrl: string) => {
+    const redirectResponse = NextResponse.redirect(
+      new URL(targetUrl, request.url),
+    );
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+    return redirectResponse;
+  };
+
   const isLoginPage = pathname.startsWith("/login");
+  const isRootPage = pathname === "/";
   const isAdminRoute = pathname.startsWith("/dashboard");
   const isUserRoute = pathname.startsWith("/user");
-  const isCompleteProfileRoute = pathname.startsWith("/complete-profile");
+
+  const isPublicRoute =
+    isLoginPage ||
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/api");
 
   if (!user) {
-    if (!isLoginPage) {
-      return NextResponse.redirect(new URL("/login", request.url));
+    if (!isPublicRoute && !isRootPage) {
+      return redirectWithCookies("/login");
     }
     return response;
   }
 
   if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .maybeSingle();
+    if (isLoginPage || isRootPage) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
 
-    const role = profile?.role || "user";
+      const role = profile?.role || "user";
 
-    if (isRootPage || isLoginPage) {
       if (role === "admin") {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+        return redirectWithCookies("/dashboard");
       } else {
-        return NextResponse.redirect(new URL("/user/dashboard", request.url));
+        return redirectWithCookies("/user/dashboard");
       }
     }
 
-    if (isAdminRoute && role !== "admin") {
-      return NextResponse.redirect(new URL("/user/dashboard", request.url));
+    if (isAdminRoute) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      const role = profile?.role || "user";
+
+      if (role !== "admin") {
+        return redirectWithCookies("/user/dashboard");
+      }
     }
   }
 
