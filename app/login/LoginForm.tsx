@@ -42,6 +42,7 @@ export function LoginForm() {
   });
 
   const signUpStepIndex = stage === "profile" ? 2 : 1;
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const errorParam = params.get("error");
@@ -104,8 +105,7 @@ export function LoginForm() {
     if (isSignUp) {
       setStage("profile");
     } else {
-      router.push("/user/dashboard");
-      router.refresh();
+      window.location.href = "/user/dashboard";
     }
   };
 
@@ -131,8 +131,7 @@ export function LoginForm() {
       return;
     }
 
-    router.push("/user/dashboard");
-    router.refresh();
+    window.location.href = "/user/dashboard";
   };
 
   return (

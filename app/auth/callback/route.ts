@@ -8,6 +8,8 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const mode = searchParams.get("mode");
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || origin;
+
   if (code) {
     try {
       const supabase = await createClient();
@@ -32,13 +34,13 @@ export async function GET(request: Request) {
 
           if (isBrandNewAccount && mode === "signin") {
             await serviceSupabase.auth.admin.deleteUser(data.user.id);
-            return NextResponse.redirect(`${origin}/login?error=no-account`);
+            return NextResponse.redirect(`${siteUrl}/login?error=no-account`);
           }
 
           if (!isBrandNewAccount && mode === "signup") {
             await supabase.auth.signOut();
             return NextResponse.redirect(
-              `${origin}/login?error=already-exists`,
+              `${siteUrl}/login?error=already-exists`,
             );
           }
 
@@ -54,7 +56,7 @@ export async function GET(request: Request) {
               fallbackName,
             );
 
-            return NextResponse.redirect(`${origin}/complete-profile`);
+            return NextResponse.redirect(`${siteUrl}/complete-profile`);
           }
         }
 
@@ -78,12 +80,12 @@ export async function GET(request: Request) {
         const destination =
           profile?.role === "admin" ? "/dashboard" : "/user/dashboard";
 
-        return NextResponse.redirect(`${origin}${destination}`);
+        return NextResponse.redirect(`${siteUrl}${destination}`);
       }
     } catch (err) {
       console.error("Auth Callback Error:", err);
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth-failed`);
+  return NextResponse.redirect(`${siteUrl}/login?error=auth-failed`);
 }

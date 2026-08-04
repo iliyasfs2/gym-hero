@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
+  let supabaseResponse = NextResponse.next({
     request: {
       headers: request.headers,
     },
@@ -17,16 +17,16 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            request.cookies.set({ name, value, ...options }),
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
           );
-          response = NextResponse.next({
+          supabaseResponse = NextResponse.next({
             request: {
               headers: request.headers,
             },
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set({ name, value, ...options }),
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
     const redirectResponse = NextResponse.redirect(
       new URL(targetUrl, request.url),
     );
-    response.cookies.getAll().forEach((cookie) => {
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value);
     });
     return redirectResponse;
@@ -52,7 +52,6 @@ export async function middleware(request: NextRequest) {
   const isLoginPage = pathname.startsWith("/login");
   const isRootPage = pathname === "/";
   const isAdminRoute = pathname.startsWith("/dashboard");
-  const isUserRoute = pathname.startsWith("/user");
 
   const isPublicRoute =
     isLoginPage ||
@@ -64,7 +63,7 @@ export async function middleware(request: NextRequest) {
     if (!isPublicRoute && !isRootPage) {
       return redirectWithCookies("/login");
     }
-    return response;
+    return supabaseResponse;
   }
 
   if (user) {
@@ -76,7 +75,6 @@ export async function middleware(request: NextRequest) {
         .maybeSingle();
 
       const role = profile?.role || "user";
-
       if (role === "admin") {
         return redirectWithCookies("/dashboard");
       } else {
@@ -92,14 +90,13 @@ export async function middleware(request: NextRequest) {
         .maybeSingle();
 
       const role = profile?.role || "user";
-
       if (role !== "admin") {
         return redirectWithCookies("/user/dashboard");
       }
     }
   }
 
-  return response;
+  return supabaseResponse;
 }
 
 export const config = {
