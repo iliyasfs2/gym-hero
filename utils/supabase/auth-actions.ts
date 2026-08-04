@@ -3,8 +3,19 @@
 import { createClient } from "./server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 
-function mapAuthError(rawMessage: string): string {
-  const msg = rawMessage.toLowerCase();
+function mapAuthError(err: any): string {
+  if (!err) return "An unexpected error occurred. Please try again.";
+
+  let msg = "";
+  if (typeof err === "string") {
+    msg = err;
+  } else if (typeof err === "object" && err !== null) {
+    msg = err.message || err.error_description || err.msg || "";
+  } else {
+    msg = String(err);
+  }
+
+  msg = msg.toLowerCase();
 
   if (
     msg.includes("security purposes") ||
@@ -47,7 +58,18 @@ function mapAuthError(rawMessage: string): string {
     return "Connection issue. Please check your internet and try again.";
   }
 
-  return rawMessage || "Something went wrong. Please try again.";
+  if (
+    typeof err === "object" &&
+    err?.message &&
+    typeof err.message === "string"
+  ) {
+    return err.message;
+  }
+  if (typeof err === "string" && err.trim().length > 0) {
+    return err;
+  }
+
+  return "Something went wrong. Please try again.";
 }
 
 export async function ensureUserRecords(
@@ -55,205 +77,239 @@ export async function ensureUserRecords(
   email: string,
   fallbackName: string,
 ) {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceRoleKey) {
-    console.warn("SUPABASE_SERVICE_ROLE_KEY is missing in env variables.");
-    return;
-  }
-
-  const serviceSupabase = createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    serviceRoleKey,
-  );
-
-  const { data: existingMember } = await serviceSupabase
-    .from("members")
-    .select("id")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (!existingMember) {
-    const { error: memberError } = await serviceSupabase
-      .from("members")
-      .insert({
-        user_id: userId,
-        name: fallbackName,
-        email: email,
-        phone: "",
-        plan_name: null,
-        price: 0,
-        status: "active",
-        joined_date: new Date().toISOString(),
-      });
-
-    if (memberError) {
-      console.error(
-        "Error creating missing member record:",
-        memberError.message,
-      );
+  try {
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceRoleKey) {
+      console.warn("SUPABASE_SERVICE_ROLE_KEY is missing in env variables.");
+      return;
     }
-  }
 
-  const { data: existingProfile } = await serviceSupabase
-    .from("profiles")
-    .select("id")
-    .eq("id", userId)
-    .maybeSingle();
-
-  if (!existingProfile) {
-    const { error: profileError } = await serviceSupabase
-      .from("profiles")
-      .insert({
-        id: userId,
-        full_name: fallbackName,
-        updated_at: new Date().toISOString(),
-      });
-
-    if (profileError) {
-      console.error(
-        "Error creating missing profile record:",
-        profileError.message,
-      );
-    }
-  }
-}
-
-export async function signUpAction(formData: FormData) {
-  const supabase = await createClient();
-
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${
-        process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-      }/auth/callback`,
-    },
-  });
-
-  if (error) {
-    console.error("RAW SUPABASE ERROR:", error.message);
-    return { success: false, error: mapAuthError(error.message) };
-  }
-
-  if (!data.user) {
-    return {
-      success: false,
-      error: "Could not create account. Please try again.",
-    };
-  }
-
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (signInError) {
-    if (signInError.message.toLowerCase().includes("email not confirmed")) {
-      return {
-        success: false,
-        error:
-          "Account created! Please check your email to confirm your account before signing in.",
-      };
-    }
-  }
-
-  await ensureUserRecords(data.user.id, email, email.split("@")[0]);
-
-  return {
-    success: true,
-    userId: data.user.id,
-    message: "Account created successfully.",
-  };
-}
-
-export async function completeProfileAction(formData: FormData) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const passedUserId = formData.get("userId") as string;
-  const targetUserId = user?.id || passedUserId;
-
-  if (!targetUserId) {
-    return { success: false, error: "Not authenticated" };
-  }
-
-  const fullName = formData.get("fullName") as string;
-  const age = formData.get("age") as string;
-  const phone = formData.get("phone") as string;
-
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const dbClient = serviceRoleKey
-    ? createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
-    : supabase;
-
-  const { error: profileError } = await dbClient.from("profiles").upsert({
-    id: targetUserId,
-    full_name: fullName,
-    age: age ? Number(age) : null,
-    phone: phone,
-    updated_at: new Date().toISOString(),
-  });
-
-  if (profileError) {
-    return { success: false, error: mapAuthError(profileError.message) };
-  }
-
-  if (serviceRoleKey) {
     const serviceSupabase = createServiceClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       serviceRoleKey,
     );
 
-    const { error: memberSyncError } = await serviceSupabase
+    const { data: existingMember } = await serviceSupabase
       .from("members")
-      .update({
-        name: fullName,
-        phone: phone,
-      })
-      .eq("user_id", targetUserId);
+      .select("id")
+      .eq("user_id", userId)
+      .maybeSingle();
 
-    if (memberSyncError) {
-      console.error("Error syncing members table:", memberSyncError.message);
+    if (!existingMember) {
+      const { error: memberError } = await serviceSupabase
+        .from("members")
+        .insert({
+          user_id: userId,
+          name: fallbackName,
+          email: email,
+          phone: "",
+          plan_name: null,
+          price: 0,
+          status: "active",
+          joined_date: new Date().toISOString(),
+        });
+
+      if (memberError) {
+        console.error(
+          "Error creating missing member record:",
+          memberError.message,
+        );
+      }
     }
-  }
 
-  return { success: true };
+    const { data: existingProfile } = await serviceSupabase
+      .from("profiles")
+      .select("id")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (!existingProfile) {
+      const { error: profileError } = await serviceSupabase
+        .from("profiles")
+        .insert({
+          id: userId,
+          full_name: fallbackName,
+          updated_at: new Date().toISOString(),
+        });
+
+      if (profileError) {
+        console.error(
+          "Error creating missing profile record:",
+          profileError.message,
+        );
+      }
+    }
+  } catch (e) {
+    console.error("ensureUserRecords error:", e);
+  }
+}
+
+export async function signUpAction(formData: FormData) {
+  try {
+    const supabase = await createClient();
+
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    if (!email || !password) {
+      return { success: false, error: "Email and password are required." };
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${
+          process.env.NEXT_PUBLIC_SITE_URL || "https://gymheroo.netlify.app"
+        }/auth/callback`,
+      },
+    });
+
+    if (error) {
+      console.error("RAW SUPABASE ERROR:", error.message);
+      return { success: false, error: mapAuthError(error) };
+    }
+
+    if (!data.user) {
+      return {
+        success: false,
+        error: "Could not create account. Please try again.",
+      };
+    }
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      if (signInError.message.toLowerCase().includes("email not confirmed")) {
+        return {
+          success: false,
+          error:
+            "Account created! Please check your email to confirm your account before signing in.",
+        };
+      }
+    }
+
+    await ensureUserRecords(data.user.id, email, email.split("@")[0]);
+
+    return {
+      success: true,
+      userId: data.user.id,
+      message: "Account created successfully.",
+    };
+  } catch (err: any) {
+    console.error("signUpAction unhandled error:", err);
+    return { success: false, error: mapAuthError(err) };
+  }
+}
+
+export async function completeProfileAction(formData: FormData) {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const passedUserId = formData.get("userId") as string;
+    const targetUserId = user?.id || passedUserId;
+
+    if (!targetUserId) {
+      return { success: false, error: "Not authenticated" };
+    }
+
+    const fullName = formData.get("fullName") as string;
+    const age = formData.get("age") as string;
+    const phone = formData.get("phone") as string;
+
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const dbClient = serviceRoleKey
+      ? createServiceClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          serviceRoleKey,
+        )
+      : supabase;
+
+    const { error: profileError } = await dbClient.from("profiles").upsert({
+      id: targetUserId,
+      full_name: fullName,
+      age: age ? Number(age) : null,
+      phone: phone,
+      updated_at: new Date().toISOString(),
+    });
+
+    if (profileError) {
+      return { success: false, error: mapAuthError(profileError) };
+    }
+
+    if (serviceRoleKey) {
+      const serviceSupabase = createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey,
+      );
+
+      const { error: memberSyncError } = await serviceSupabase
+        .from("members")
+        .update({
+          name: fullName,
+          phone: phone,
+        })
+        .eq("user_id", targetUserId);
+
+      if (memberSyncError) {
+        console.error("Error syncing members table:", memberSyncError.message);
+      }
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    console.error("completeProfileAction error:", err);
+    return { success: false, error: mapAuthError(err) };
+  }
 }
 
 export async function signInAction(formData: FormData) {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+    if (!email || !password) {
+      return { success: false, error: "Email and password are required." };
+    }
 
-  if (error) {
-    console.error("RAW SUPABASE ERROR:", error.message);
-    return { success: false, error: mapAuthError(error.message) };
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.error("RAW SUPABASE ERROR:", error.message);
+      return { success: false, error: mapAuthError(error) };
+    }
+
+    if (data.user) {
+      const fallbackName =
+        data.user.user_metadata?.full_name || email.split("@")[0];
+      await ensureUserRecords(data.user.id, email, fallbackName);
+    }
+
+    return { success: true, user: data.user };
+  } catch (err: any) {
+    console.error("signInAction error:", err);
+    return { success: false, error: mapAuthError(err) };
   }
-
-  if (data.user) {
-    const fallbackName =
-      data.user.user_metadata?.full_name || email.split("@")[0];
-    await ensureUserRecords(data.user.id, email, fallbackName);
-  }
-
-  return { success: true, user: data.user };
 }
 
 export async function signOutAction() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  return { success: true };
+  try {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: mapAuthError(err) };
+  }
 }

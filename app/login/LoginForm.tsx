@@ -66,7 +66,7 @@ export function LoginForm() {
       setMsg(null);
       const res = await signInWithGoogle(isSignUp ? "signup" : "signin");
       if (res?.error) {
-        setMsg(res.error);
+        setMsg(String(res.error));
         setGoogleLoading(false);
         return;
       }
@@ -97,8 +97,12 @@ export function LoginForm() {
     const result = await (isSignUp ? signUpAction : signInAction)(fd);
     setLoading(false);
 
-    if (!result.success) {
-      setMsg(result.error || "Auth failed");
+    if (!result || !result.success) {
+      const errorMessage =
+        typeof result?.error === "string"
+          ? result.error
+          : "Authentication failed. Please try again.";
+      setMsg(errorMessage);
       return;
     }
 
@@ -126,8 +130,12 @@ export function LoginForm() {
     const result = await completeProfileAction(fd);
     setLoading(false);
 
-    if (!result.success) {
-      setMsg(result.error || "Failed to save profile");
+    if (!result || !result.success) {
+      const errorMessage =
+        typeof result?.error === "string"
+          ? result.error
+          : "Failed to save profile. Please try again.";
+      setMsg(errorMessage);
       return;
     }
 
