@@ -6,17 +6,27 @@ import { createClient as createServiceClient } from "@supabase/supabase-js";
 function mapAuthError(rawMessage: string): string {
   const msg = rawMessage.toLowerCase();
 
+  if (
+    msg.includes("security purposes") ||
+    msg.includes("60 seconds") ||
+    msg.includes("rate limit") ||
+    msg.includes("too many requests") ||
+    msg.includes("cooldown")
+  ) {
+    return "For security purposes, please wait 60 seconds before trying again.";
+  }
   if (msg.includes("invalid login credentials")) {
     return "Incorrect email or password. Please check your details and try again.";
   }
   if (
     msg.includes("user already registered") ||
-    msg.includes("already been registered")
+    msg.includes("already been registered") ||
+    msg.includes("already exists")
   ) {
     return "An account with this email already exists. Try signing in instead.";
   }
   if (msg.includes("email not confirmed")) {
-    return "Please confirm your email before signing in.";
+    return "Please confirm your email address before signing in.";
   }
   if (
     msg.includes("password should be at least") ||
@@ -30,14 +40,14 @@ function mapAuthError(rawMessage: string): string {
   ) {
     return "Please enter a valid email address.";
   }
-  if (msg.includes("rate limit") || msg.includes("too many requests")) {
-    return "Too many attempts. Please wait a moment and try again.";
+  if (msg.includes("signups not allowed") || msg.includes("signup disabled")) {
+    return "Signups are currently disabled on this project.";
   }
   if (msg.includes("network") || msg.includes("fetch failed")) {
     return "Connection issue. Please check your internet and try again.";
   }
 
-  return "Something went wrong. Please try again.";
+  return rawMessage || "Something went wrong. Please try again.";
 }
 
 export async function ensureUserRecords(
@@ -47,7 +57,7 @@ export async function ensureUserRecords(
 ) {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceRoleKey) {
-    console.warn(" SUPABASE_SERVICE_ROLE_KEY is missing in env variables.");
+    console.warn("SUPABASE_SERVICE_ROLE_KEY is missing in env variables.");
     return;
   }
 
@@ -114,12 +124,13 @@ export async function signUpAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
+      emailRedirectTo: `${
+        process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+      }/auth/callback`,
     },
   });
 
@@ -135,10 +146,20 @@ export async function signUpAction(formData: FormData) {
     };
   }
 
-  await supabase.auth.signInWithPassword({
+  const { error: signInError } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
+
+  if (signInError) {
+    if (signInError.message.toLowerCase().includes("email not confirmed")) {
+      return {
+        success: false,
+        error:
+          "Account created! Please check your email to confirm your account before signing in.",
+      };
+    }
+  }
 
   await ensureUserRecords(data.user.id, email, email.split("@")[0]);
 
