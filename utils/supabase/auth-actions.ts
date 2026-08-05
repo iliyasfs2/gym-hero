@@ -110,15 +110,9 @@ export async function signUpAction(formData: FormData) {
       return { success: false, error: "Email and password are required." };
     }
 
-    const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL || "https://gymheroo.netlify.app";
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: `${siteUrl}/auth/callback`,
-      },
     });
 
     if (error) {
@@ -129,27 +123,17 @@ export async function signUpAction(formData: FormData) {
       return { success: false, error: "Could not create account." };
     }
 
-    await ensureUserRecords(data.user.id, email, email.split("@")[0]);
-
-    const { error: signInError } = await supabase.auth.signInWithPassword({
+    // ورود خودکار آنی
+    await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (signInError) {
-      return {
-        success: true,
-        isEmailConfirmationRequired: true,
-        message:
-          "Account created! Please check your email to confirm your account.",
-      };
-    }
+    await ensureUserRecords(data.user.id, email, email.split("@")[0]);
 
     return {
       success: true,
       userId: data.user.id,
-      isEmailConfirmationRequired: false,
-      message: "Account created successfully.",
     };
   } catch (err: any) {
     return { success: false, error: mapAuthError(err) };

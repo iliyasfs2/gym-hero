@@ -125,15 +125,7 @@ export function LoginForm() {
     }
 
     if (isSignUp) {
-      if (result.isEmailConfirmationRequired) {
-        setMsg(
-          result.message ||
-            "Account created! Please check your email to confirm your account.",
-        );
-        setStage("method");
-      } else {
-        setStage("profile");
-      }
+      setStage("profile");
     } else {
       window.location.href = "/user/dashboard";
     }
@@ -271,8 +263,8 @@ export function LoginForm() {
               </button>
 
               {msg && (
-                <div className="flex items-center gap-2 text-xs p-2.5 rounded-xl border bg-blue-500/10 border-blue-500/30 text-blue-300">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-blue-400" />
+                <div className="flex items-center gap-2 text-xs p-2.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-300">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{msg}</span>
                 </div>
               )}
