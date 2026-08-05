@@ -26,6 +26,21 @@ import { signInWithGoogle } from "./actions";
 
 type AuthStage = "method" | "credentials" | "profile";
 
+function parseErrorMessage(err: any): string {
+  if (!err) return "Authentication failed. Please try again.";
+  if (typeof err === "string") {
+    const trimmed = err.trim();
+    if (trimmed && trimmed !== "{}" && trimmed !== "[object Object]") {
+      return trimmed;
+    }
+  }
+  if (typeof err === "object" && err !== null) {
+    if (typeof err.error === "string") return parseErrorMessage(err.error);
+    if (typeof err.message === "string") return parseErrorMessage(err.message);
+  }
+  return "Authentication failed. Please check your details and try again.";
+}
+
 export function LoginForm() {
   const router = useRouter();
   const [stage, setStage] = useState<AuthStage>("method");
@@ -66,7 +81,7 @@ export function LoginForm() {
       setMsg(null);
       const res = await signInWithGoogle(isSignUp ? "signup" : "signin");
       if (res?.error) {
-        setMsg(String(res.error));
+        setMsg(parseErrorMessage(res.error));
         setGoogleLoading(false);
         return;
       }
@@ -94,20 +109,31 @@ export function LoginForm() {
       return setMsg("Password must be at least 6 characters.");
 
     setLoading(true);
-    const result = await (isSignUp ? signUpAction : signInAction)(fd);
+    let result: any = null;
+    try {
+      result = await (isSignUp ? signUpAction : signInAction)(fd);
+    } catch (err) {
+      setLoading(false);
+      setMsg("Connection error. Please try again.");
+      return;
+    }
     setLoading(false);
 
     if (!result || !result.success) {
-      const errorMessage =
-        typeof result?.error === "string"
-          ? result.error
-          : "Authentication failed. Please try again.";
-      setMsg(errorMessage);
+      setMsg(parseErrorMessage(result?.error));
       return;
     }
 
     if (isSignUp) {
-      setStage("profile");
+      if (result.isEmailConfirmationRequired) {
+        setMsg(
+          result.message ||
+            "Account created! Please check your email to confirm your account.",
+        );
+        setStage("method");
+      } else {
+        setStage("profile");
+      }
     } else {
       window.location.href = "/user/dashboard";
     }
@@ -127,15 +153,18 @@ export function LoginForm() {
     fd.append("phone", profileData.phone);
 
     setLoading(true);
-    const result = await completeProfileAction(fd);
+    let result: any = null;
+    try {
+      result = await completeProfileAction(fd);
+    } catch (err) {
+      setLoading(false);
+      setMsg("Failed to save profile. Please try again.");
+      return;
+    }
     setLoading(false);
 
     if (!result || !result.success) {
-      const errorMessage =
-        typeof result?.error === "string"
-          ? result.error
-          : "Failed to save profile. Please try again.";
-      setMsg(errorMessage);
+      setMsg(parseErrorMessage(result?.error));
       return;
     }
 
@@ -242,8 +271,8 @@ export function LoginForm() {
               </button>
 
               {msg && (
-                <div className="flex items-center gap-2 text-xs p-2.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-300">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
+                <div className="flex items-center gap-2 text-xs p-2.5 rounded-xl border bg-blue-500/10 border-blue-500/30 text-blue-300">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-blue-400" />
                   <span>{msg}</span>
                 </div>
               )}

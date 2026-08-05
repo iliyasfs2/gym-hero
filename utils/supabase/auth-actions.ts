@@ -4,7 +4,7 @@ import { createClient } from "./server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 
 function mapAuthError(err: any): string {
-  if (!err) return "An unexpected error occurred. Please try again.";
+  if (!err) return "Authentication failed. Please try again.";
 
   let msg = "";
   if (typeof err === "string") {
@@ -15,61 +15,37 @@ function mapAuthError(err: any): string {
     msg = String(err);
   }
 
-  msg = msg.toLowerCase();
+  msg = msg.trim();
 
-  if (
-    msg.includes("security purposes") ||
-    msg.includes("60 seconds") ||
-    msg.includes("rate limit") ||
-    msg.includes("too many requests") ||
-    msg.includes("cooldown")
-  ) {
-    return "For security purposes, please wait 60 seconds before trying again.";
-  }
-  if (msg.includes("invalid login credentials")) {
-    return "Incorrect email or password. Please check your details and try again.";
-  }
-  if (
-    msg.includes("user already registered") ||
-    msg.includes("already been registered") ||
-    msg.includes("already exists")
-  ) {
-    return "An account with this email already exists. Try signing in instead.";
-  }
-  if (msg.includes("email not confirmed")) {
-    return "Please confirm your email address before signing in.";
-  }
-  if (
-    msg.includes("password should be at least") ||
-    msg.includes("password is too short")
-  ) {
-    return "Password must be at least 6 characters long.";
-  }
-  if (
-    msg.includes("unable to validate email address") ||
-    msg.includes("invalid email")
-  ) {
-    return "Please enter a valid email address.";
-  }
-  if (msg.includes("signups not allowed") || msg.includes("signup disabled")) {
-    return "Signups are currently disabled on this project.";
-  }
-  if (msg.includes("network") || msg.includes("fetch failed")) {
-    return "Connection issue. Please check your internet and try again.";
+  if (!msg || msg === "{}" || msg === "[object Object]") {
+    return "Something went wrong. Please try again.";
   }
 
+  const lower = msg.toLowerCase();
+
   if (
-    typeof err === "object" &&
-    err?.message &&
-    typeof err.message === "string"
+    lower.includes("security purposes") ||
+    lower.includes("60 seconds") ||
+    lower.includes("rate limit") ||
+    lower.includes("too many requests")
   ) {
-    return err.message;
+    return "Please wait a moment before trying again.";
   }
-  if (typeof err === "string" && err.trim().length > 0) {
-    return err;
+  if (lower.includes("invalid login credentials")) {
+    return "Incorrect email or password.";
+  }
+  if (
+    lower.includes("user already registered") ||
+    lower.includes("already been registered") ||
+    lower.includes("already exists")
+  ) {
+    return "An account with this email already exists. Try signing in.";
+  }
+  if (lower.includes("password should be at least")) {
+    return "Password must be at least 6 characters.";
   }
 
-  return "Something went wrong. Please try again.";
+  return msg;
 }
 
 export async function ensureUserRecords(
@@ -78,16 +54,12 @@ export async function ensureUserRecords(
   fallbackName: string,
 ) {
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!serviceRoleKey) {
-      console.warn("SUPABASE_SERVICE_ROLE_KEY is missing in env variables.");
-      return;
-    }
 
-    const serviceSupabase = createServiceClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      serviceRoleKey,
-    );
+    if (!supabaseUrl || !serviceRoleKey) return;
+
+    const serviceSupabase = createServiceClient(supabaseUrl, serviceRoleKey);
 
     const { data: existingMember } = await serviceSupabase
       .from("members")
@@ -96,25 +68,16 @@ export async function ensureUserRecords(
       .maybeSingle();
 
     if (!existingMember) {
-      const { error: memberError } = await serviceSupabase
-        .from("members")
-        .insert({
-          user_id: userId,
-          name: fallbackName,
-          email: email,
-          phone: "",
-          plan_name: null,
-          price: 0,
-          status: "active",
-          joined_date: new Date().toISOString(),
-        });
-
-      if (memberError) {
-        console.error(
-          "Error creating missing member record:",
-          memberError.message,
-        );
-      }
+      await serviceSupabase.from("members").insert({
+        user_id: userId,
+        name: fallbackName,
+        email: email,
+        phone: "",
+        plan_name: null,
+        price: 0,
+        status: "active",
+        joined_date: new Date().toISOString(),
+      });
     }
 
     const { data: existingProfile } = await serviceSupabase
@@ -124,23 +87,15 @@ export async function ensureUserRecords(
       .maybeSingle();
 
     if (!existingProfile) {
-      const { error: profileError } = await serviceSupabase
-        .from("profiles")
-        .insert({
-          id: userId,
-          full_name: fallbackName,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (profileError) {
-        console.error(
-          "Error creating missing profile record:",
-          profileError.message,
-        );
-      }
+      await serviceSupabase.from("profiles").insert({
+        id: userId,
+        full_name: fallbackName,
+        role: "user",
+        updated_at: new Date().toISOString(),
+      });
     }
-  } catch (e) {
-    console.error("ensureUserRecords error:", e);
+  } catch (err) {
+    console.error("ensureUserRecords error:", err);
   }
 }
 
@@ -155,27 +110,26 @@ export async function signUpAction(formData: FormData) {
       return { success: false, error: "Email and password are required." };
     }
 
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL || "https://gymheroo.netlify.app";
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${
-          process.env.NEXT_PUBLIC_SITE_URL || "https://gymheroo.netlify.app"
-        }/auth/callback`,
+        emailRedirectTo: `${siteUrl}/auth/callback`,
       },
     });
 
     if (error) {
-      console.error("RAW SUPABASE ERROR:", error.message);
       return { success: false, error: mapAuthError(error) };
     }
 
     if (!data.user) {
-      return {
-        success: false,
-        error: "Could not create account. Please try again.",
-      };
+      return { success: false, error: "Could not create account." };
     }
+
+    await ensureUserRecords(data.user.id, email, email.split("@")[0]);
 
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
@@ -183,24 +137,53 @@ export async function signUpAction(formData: FormData) {
     });
 
     if (signInError) {
-      if (signInError.message.toLowerCase().includes("email not confirmed")) {
-        return {
-          success: false,
-          error:
-            "Account created! Please check your email to confirm your account before signing in.",
-        };
-      }
+      return {
+        success: true,
+        isEmailConfirmationRequired: true,
+        message:
+          "Account created! Please check your email to confirm your account.",
+      };
     }
-
-    await ensureUserRecords(data.user.id, email, email.split("@")[0]);
 
     return {
       success: true,
       userId: data.user.id,
+      isEmailConfirmationRequired: false,
       message: "Account created successfully.",
     };
   } catch (err: any) {
-    console.error("signUpAction unhandled error:", err);
+    return { success: false, error: mapAuthError(err) };
+  }
+}
+
+export async function signInAction(formData: FormData) {
+  try {
+    const supabase = await createClient();
+
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    if (!email || !password) {
+      return { success: false, error: "Email and password are required." };
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      return { success: false, error: mapAuthError(error) };
+    }
+
+    if (data.user) {
+      const fallbackName =
+        data.user.user_metadata?.full_name || email.split("@")[0];
+      await ensureUserRecords(data.user.id, email, fallbackName);
+    }
+
+    return { success: true, user: data.user };
+  } catch (err: any) {
     return { success: false, error: mapAuthError(err) };
   }
 }
@@ -224,92 +207,31 @@ export async function completeProfileAction(formData: FormData) {
     const age = formData.get("age") as string;
     const phone = formData.get("phone") as string;
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const dbClient = serviceRoleKey
-      ? createServiceClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          serviceRoleKey,
-        )
-      : supabase;
 
-    const { error: profileError } = await dbClient.from("profiles").upsert({
+    const dbClient =
+      supabaseUrl && serviceRoleKey
+        ? createServiceClient(supabaseUrl, serviceRoleKey)
+        : supabase;
+
+    await dbClient.from("profiles").upsert({
       id: targetUserId,
       full_name: fullName,
       age: age ? Number(age) : null,
       phone: phone,
+      role: "user",
       updated_at: new Date().toISOString(),
     });
 
-    if (profileError) {
-      return { success: false, error: mapAuthError(profileError) };
-    }
-
-    if (serviceRoleKey) {
-      const serviceSupabase = createServiceClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        serviceRoleKey,
-      );
-
-      const { error: memberSyncError } = await serviceSupabase
-        .from("members")
-        .update({
-          name: fullName,
-          phone: phone,
-        })
-        .eq("user_id", targetUserId);
-
-      if (memberSyncError) {
-        console.error("Error syncing members table:", memberSyncError.message);
-      }
-    }
-
     return { success: true };
   } catch (err: any) {
-    console.error("completeProfileAction error:", err);
-    return { success: false, error: mapAuthError(err) };
-  }
-}
-
-export async function signInAction(formData: FormData) {
-  try {
-    const supabase = await createClient();
-
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
-    if (!email || !password) {
-      return { success: false, error: "Email and password are required." };
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      console.error("RAW SUPABASE ERROR:", error.message);
-      return { success: false, error: mapAuthError(error) };
-    }
-
-    if (data.user) {
-      const fallbackName =
-        data.user.user_metadata?.full_name || email.split("@")[0];
-      await ensureUserRecords(data.user.id, email, fallbackName);
-    }
-
-    return { success: true, user: data.user };
-  } catch (err: any) {
-    console.error("signInAction error:", err);
     return { success: false, error: mapAuthError(err) };
   }
 }
 
 export async function signOutAction() {
-  try {
-    const supabase = await createClient();
-    await supabase.auth.signOut();
-    return { success: true };
-  } catch (err: any) {
-    return { success: false, error: mapAuthError(err) };
-  }
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  return { success: true };
 }
