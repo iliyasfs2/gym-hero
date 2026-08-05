@@ -49,17 +49,16 @@ The platform combines a responsive modern UI with powerful management features, 
 * Modern UI built with a clean user experience
 
 ---
-
 ## 📸 Screenshots
 
-### admin-dashboard
-![admin dashboard](./public/screenshots/admin-dashboard.png)
+### Admin Dashboard
+![Admin Dashboard](./public/screenshots/admin-dashboard.png)
 
-### memebers
-![members](./public/screenshots/member.png)
+### Members
+![Members](./public/screenshots/member.png)
 
-### payments
-![payments](./public/screenshots/paymens.png)
+### Payments
+![Payments](./public/screenshots/paymens.png)
 
 ### Member Dashboard
 ![Member Dashboard](./public/screenshots/member.dashboard.png)
@@ -67,13 +66,11 @@ The platform combines a responsive modern UI with powerful management features, 
 ### Profile
 ![Profile](./public/screenshots/member-profile.png)
 
-### buy subscription
-![buy subscription](./public/screenshots/buy.subscription.png)
+### Buy Subscription
+![Buy Subscription](./public/screenshots/buy.subscription.png)
 
-
-### subscription history
-![buy subscription](./public/screenshots/subscription-history.png)
-
+### Subscription History
+![Subscription History](./public/screenshots/subscription-history.png)
 
 Screenshots will include:
 
