@@ -23,7 +23,7 @@ const menuItems = [
   { name: "Profile", href: "/user/profile", icon: User },
 ];
 
-export default function UserSidebar() {
+export default function UserSidebar({ isMenuOpen }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -52,7 +52,15 @@ export default function UserSidebar() {
   }, [supabase]);
 
   return (
-    <aside className="hidden md:flex flex-col h-screen bg-[#121824] border-r border-white/[0.04] text-slate-400 sticky top-0 left-0 z-40 transition-all duration-300 ease-in-out w-20 hover:w-64 group shadow-xl">
+    <aside
+      className={`flex flex-col h-screen bg-[#121824] border-r border-white/[0.04] text-slate-400 sticky top-0 left-0 z-40 transition-all duration-300 ease-in-out w-20 hover:w-64 group shadow-xl ${isMenuOpen
+        ? window.innerWidth < 768
+          ? "block"
+          : "md:flex"
+        : window.innerWidth < 768
+        ? "hidden"
+        : "md:flex"}`}
+    >
       <div className="h-20 flex items-center px-6 border-b border-white/[0.04] overflow-hidden whitespace-nowrap">
         <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base shrink-0 shadow-md shadow-blue-600/20">
           G
