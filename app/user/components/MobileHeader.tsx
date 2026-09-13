@@ -1,10 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
-export default function MobileHeader({ isMenuOpen, setIsMenuOpen }: { isMenuOpen: boolean; setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
+export default function MobileHeader({
+  isMenuOpen,
+  onToggle,
+}: {
+  isMenuOpen: boolean;
+  onToggle: () => void;
+}) {
   return (
     <header className="hidden md:hidden border-b border-white/[0.04] bg-[#121824]">
       <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
@@ -19,7 +25,7 @@ export default function MobileHeader({ isMenuOpen, setIsMenuOpen }: { isMenuOpen
         </Link>
 
         <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          onClick={onToggle}
           className="p-2 rounded-lg hover:bg-white/[0.02] transition-colors"
           aria-label="Toggle menu"
         >
