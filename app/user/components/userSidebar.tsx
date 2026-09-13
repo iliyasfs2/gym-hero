@@ -23,11 +23,19 @@ const menuItems = [
   { name: "Profile", href: "/user/profile", icon: User },
 ];
 
-export default function UserSidebar({ isMenuOpen }) {
+export default function UserSidebar({ isMenuOpen }: { isMenuOpen: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const supabase = createClient();
+
+  useEffect(() => {
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
+    checkIsMobile();
+    window.addEventListener("resize", checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
+  }, []);
 
   useEffect(() => {
     async function checkAdminRole() {
@@ -54,10 +62,10 @@ export default function UserSidebar({ isMenuOpen }) {
   return (
     <aside
       className={`flex flex-col h-screen bg-[#121824] border-r border-white/[0.04] text-slate-400 sticky top-0 left-0 z-40 transition-all duration-300 ease-in-out w-20 hover:w-64 group shadow-xl ${isMenuOpen
-        ? window.innerWidth < 768
+        ? isMobile
           ? "block"
           : "md:flex"
-        : window.innerWidth < 768
+        : isMobile
         ? "hidden"
         : "md:flex"}`}
     >

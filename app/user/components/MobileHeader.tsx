@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
-export default function MobileHeader() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+export default function MobileHeader({ isMenuOpen, setIsMenuOpen }: { isMenuOpen: boolean; setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
   return (
     <header className="hidden md:hidden border-b border-white/[0.04] bg-[#121824]">
       <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
