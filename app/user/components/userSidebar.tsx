@@ -34,19 +34,7 @@ export default function UserSidebar({
   const pathname = usePathname();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const supabase = createClient();
-
-  useEffect(() => {
-    const checkViewport = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (!mobile) onClose();
-    };
-    checkViewport();
-    window.addEventListener("resize", checkViewport);
-    return () => window.removeEventListener("resize", checkViewport);
-  }, [onClose]);
 
   useEffect(() => {
     async function checkAdminRole() {
@@ -70,18 +58,19 @@ export default function UserSidebar({
     checkAdminRole();
   }, [supabase]);
 
-  const asideClassName = isMobile
-    ? `fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col bg-[#121824] border-r border-white/[0.04] text-slate-400 shadow-2xl transition-transform duration-300 ease-in-out ${
-        isMenuOpen ? "translate-x-0" : "-translate-x-full"
-      }`
-    : "sticky top-0 left-0 z-40 flex h-screen w-20 flex-col bg-[#121824] border-r border-white/[0.04] text-slate-400 shadow-xl transition-all duration-300 ease-in-out hover:w-64 group";
-
   return (
     <>
-      {isMobile && isMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-black/60" onClick={onClose} />
+      {isMenuOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/60 md:hidden"
+          onClick={onClose}
+        />
       )}
-      <aside className={asideClassName}>
+      <aside
+        className={`fixed top-0 bottom-0 left-0 z-50 flex h-screen w-64 flex-col bg-[#121824] border-r border-white/[0.04] text-slate-400 shadow-2xl transition-all duration-300 ease-in-out group ${
+          isMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } md:sticky md:bottom-auto md:z-40 md:w-20 md:translate-x-0 md:shadow-xl md:hover:w-64`}
+      >
         <div className="flex h-20 items-center border-b border-white/[0.04] px-6 whitespace-nowrap overflow-hidden">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base shrink-0 shadow-md shadow-blue-600/20">
             G
@@ -89,15 +78,13 @@ export default function UserSidebar({
           <span className="ml-4 text-white font-bold text-sm tracking-tight transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100">
             Gym Hero Member
           </span>
-          {isMobile && (
-            <button
-              onClick={onClose}
-              aria-label="Close menu"
-              className="ml-auto p-2 rounded-lg hover:bg-white/[0.02] transition-colors"
-            >
-              <X size={20} />
-            </button>
-          )}
+          <button
+            onClick={onClose}
+            aria-label="Close menu"
+            className="ml-auto p-2 rounded-lg hover:bg-white/[0.02] transition-colors md:hidden"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
@@ -109,7 +96,7 @@ export default function UserSidebar({
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={isMobile ? onClose : undefined}
+                onClick={onClose}
                 className={`flex items-center h-12 px-3 rounded-xl transition-all duration-200 overflow-hidden whitespace-nowrap group/item relative ${
                   isActive
                     ? "bg-white/[0.06] text-white font-semibold shadow-inner"
