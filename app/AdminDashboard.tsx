@@ -143,7 +143,7 @@ export default function AdminDashboard({
     <GlowLayout>
       <WelcomeToast />
 
-      <div className="flex h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
+      <div className="flex flex-col md:flex-row h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
         <Sidebar />
         <div className="flex-1 h-full bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
           <div className="w-full max-w-7xl mx-auto px-6 py-6 md:px-12 md:py-8 space-y-6">

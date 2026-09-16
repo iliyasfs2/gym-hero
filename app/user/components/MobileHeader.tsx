@@ -13,7 +13,7 @@ export default function MobileHeader({
 }) {
   return (
     <header className="sticky top-0 z-50 flex md:hidden border-b border-white/[0.04] bg-[#121824]">
-      <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="w-full px-4 py-3 flex items-center justify-between">
         <Link
           href="/user/dashboard"
           className="flex items-center gap-2"

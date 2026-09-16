@@ -123,7 +123,6 @@ export async function signUpAction(formData: FormData) {
       return { success: false, error: "Could not create account." };
     }
 
-    // ورود خودکار آنی
     await supabase.auth.signInWithPassword({
       email,
       password,

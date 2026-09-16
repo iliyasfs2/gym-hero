@@ -30,7 +30,6 @@ export async function addPlanAction(formData: FormData) {
     return;
   }
 
-  // بروزرسانی کش هر دو مسیر
   revalidatePath("/subscriptions", "page");
   revalidatePath("/user/subscribe", "page");
 

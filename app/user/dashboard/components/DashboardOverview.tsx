@@ -123,7 +123,6 @@ export default function DashboardOverview({
           </div>
         </div>
 
-        {/* Member Card & BMI Gauge Section */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch">
           <div className="md:col-span-7 bg-[#121824] border border-white/[0.06] rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
             <MemberCard

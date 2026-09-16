@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { completeProfileAction } from "@/utils/supabase/auth-actions";
 
-// 👈 اضافه شدن userId به propها
 interface CompleteProfileFormProps {
   defaultName: string;
   userId?: string;
@@ -46,7 +45,6 @@ export function CompleteProfileForm({
     fd.append("age", profileData.age);
     fd.append("phone", profileData.phone);
 
-    // 👈 اضافه کردن userId به FormData در صورت وجود
     if (userId) {
       fd.append("userId", userId);
     }
