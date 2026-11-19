@@ -31,7 +31,7 @@ export async function addPlanAction(formData: FormData) {
   }
 
   revalidatePath("/subscriptions", "page");
-  revalidatePath("/user/subscribe", "page");
+  revalidatePath("/user/buy_subscribe", "page");
 
   redirect("/subscriptions");
 }
@@ -61,7 +61,7 @@ export async function updatePlanAction(formData: FormData) {
   }
 
   revalidatePath("/subscriptions", "page");
-  revalidatePath("/user/subscribe", "page");
+  revalidatePath("/user/buy_subscribe", "page");
 
   redirect("/subscriptions");
 }
@@ -84,7 +84,7 @@ export async function deletePlanAction(formData: FormData) {
   }
 
   revalidatePath("/subscriptions", "page");
-  revalidatePath("/user/subscribe", "page");
+  revalidatePath("/user/buy_subscribe", "page");
 
   redirect("/subscriptions");
 }

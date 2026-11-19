@@ -1,8 +1,23 @@
 import { createClient } from "@/utils/supabase/server";
 import MembersClientContainer from "./components/MembersClientContainer";
 import { Member, AppProvider } from "@/app/components/context/AppContext";
+import { FilterStatus } from "./components/types";
 
-export default async function MembersPage() {
+function parseFilterStatus(raw?: string): FilterStatus {
+  const normalized = (raw || "").toLowerCase();
+  if (normalized === "active") return "Active";
+  if (normalized === "expired" || normalized === "inactive") return "Expired";
+  if (normalized === "expiring soon") return "Expiring Soon";
+  return "All";
+}
+
+export default async function MembersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const resolvedParams = await searchParams;
+  const initialStatus = parseFilterStatus(resolvedParams.status);
   const supabase = await createClient();
 
   const [membersResult, subscriptionsResult] = await Promise.all([
@@ -45,6 +60,7 @@ export default async function MembersPage() {
       <MembersClientContainer
         initialMembers={formattedMembers}
         availablePlans={availablePlans}
+        initialStatus={initialStatus}
       />
     </AppProvider>
   );

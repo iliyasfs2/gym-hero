@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { MemberCard } from "../components/MemberCard";
 import { BMIGaugeCard } from "./BMIGaugeCard";
 import {
@@ -34,9 +35,9 @@ export default function DashboardOverview({
   const isActive = profileData.subscription_status === "active";
 
   return (
-    <div className="min-h-screen bg-[#0a0f1d] text-slate-100 font-sans p-4 md:p-8 flex flex-col items-center">
-      <div className="w-full max-w-5xl space-y-6">
-        <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
+    <div className="min-h-screen bg-[#0a0f1d] text-slate-100 font-sans p-4 sm:p-6 md:p-8 flex flex-col items-center">
+      <div className="w-full max-w-5xl space-y-5 sm:space-y-6">
+        <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
           <div className="space-y-1.5 z-10">
             <div className="flex items-center gap-2">
               <span className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg">
@@ -46,10 +47,10 @@ export default function DashboardOverview({
                 Gym Hero Athlete
               </span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
               {profileData.full_name || "Welcome Back!"}
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               Ready to crush your goals today? Keep pushing your limits.
             </p>
           </div>
@@ -70,53 +71,52 @@ export default function DashboardOverview({
           <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
         </div>
 
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-          <div className="bg-[#121824] border border-white/[0.06] rounded-2xl p-4 flex items-center gap-3.5 hover:border-white/[0.12] transition-all">
-            <div className="p-2.5 bg-blue-600/10 text-blue-400 rounded-xl">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
+          <div className="bg-[#121824] border border-white/[0.06] rounded-2xl p-3.5 sm:p-4 flex items-center gap-3 hover:border-white/[0.12] transition-all min-w-0">
+            <div className="p-2 sm:p-2.5 bg-blue-600/10 text-blue-400 rounded-xl shrink-0">
               <CalendarCheck size={20} />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-[11px] text-slate-400 font-medium">
                 Days Left
               </p>
-              <h3 className="text-lg font-bold text-white mt-0.5">
+              <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
                 {profileData.days_left ?? 0}
               </h3>
             </div>
           </div>
 
-          <div className="bg-[#121824] border border-white/[0.06] rounded-2xl p-4 flex items-center gap-3.5 hover:border-white/[0.12] transition-all">
-            <div className="p-2.5 bg-indigo-600/10 text-indigo-400 rounded-xl">
+          <div className="bg-[#121824] border border-white/[0.06] rounded-2xl p-3.5 sm:p-4 flex items-center gap-3 hover:border-white/[0.12] transition-all min-w-0">
+            <div className="p-2 sm:p-2.5 bg-indigo-600/10 text-indigo-400 rounded-xl shrink-0">
               <Sparkles size={20} />
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-[11px] text-slate-400 font-medium">Plan</p>
-              <h3 className="text-sm font-bold text-white mt-0.5 truncate max-w-[90px]">
+              <h3 className="text-sm font-bold text-white mt-0.5 truncate">
                 {profileData.plan_name || "None"}
               </h3>
             </div>
           </div>
 
-          <div className="bg-[#121824] border border-white/[0.06] rounded-2xl p-4 flex items-center gap-3.5 hover:border-white/[0.12] transition-all">
-            <div className="p-2.5 bg-cyan-600/10 text-cyan-400 rounded-xl">
+          <div className="bg-[#121824] border border-white/[0.06] rounded-2xl p-3.5 sm:p-4 flex items-center gap-3 hover:border-white/[0.12] transition-all min-w-0">
+            <div className="p-2 sm:p-2.5 bg-cyan-600/10 text-cyan-400 rounded-xl shrink-0">
               <Weight size={20} />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-[11px] text-slate-400 font-medium">Weight</p>
-              <h3 className="text-lg font-bold text-white mt-0.5">
+              <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
                 {profileData.weight ? `${profileData.weight} kg` : "--"}
               </h3>
             </div>
           </div>
 
-          <div className="bg-[#121824] border border-white/[0.06] rounded-2xl p-4 flex items-center gap-3.5 hover:border-white/[0.12] transition-all">
-            <div className="p-2.5 bg-sky-600/10 text-sky-400 rounded-xl">
+          <div className="bg-[#121824] border border-white/[0.06] rounded-2xl p-3.5 sm:p-4 flex items-center gap-3 hover:border-white/[0.12] transition-all min-w-0">
+            <div className="p-2 sm:p-2.5 bg-sky-600/10 text-sky-400 rounded-xl shrink-0">
               <Ruler size={20} />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-[11px] text-slate-400 font-medium">Height</p>
-              <h3 className="text-lg font-bold text-white mt-0.5">
+              <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
                 {profileData.height ? `${profileData.height} cm` : "--"}
               </h3>
             </div>
@@ -124,7 +124,7 @@ export default function DashboardOverview({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch">
-          <div className="md:col-span-7 bg-[#121824] border border-white/[0.06] rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
+          <div className="md:col-span-7 bg-[#121824] border border-white/[0.06] rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between">
             <MemberCard
               fullName={profileData.full_name}
               planName={profileData.plan_name}
@@ -135,22 +135,22 @@ export default function DashboardOverview({
               purchaseDate={profileData.purchase_date}
             />
 
-            <div className="pt-4 border-t border-white/[0.06] flex items-center justify-center gap-3 mt-4">
-              <a
+            <div className="pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-center gap-3 mt-4">
+              <Link
                 href="/user/profile"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all text-xs font-semibold text-slate-200 hover:scale-[1.02]"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all text-xs font-semibold text-slate-200 hover:scale-[1.02]"
               >
                 <User size={16} className="text-blue-400" />
                 <span>Profile</span>
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/user/subscription-history"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all text-xs font-semibold text-slate-200 hover:scale-[1.02]"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all text-xs font-semibold text-slate-200 hover:scale-[1.02]"
               >
                 <History size={16} className="text-blue-400" />
                 <span>History</span>
-              </a>
+              </Link>
             </div>
           </div>
 

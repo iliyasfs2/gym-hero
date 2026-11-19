@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/clinet";
 import { ProfileData, StatusState } from "./types";
 
 export function useProfileForm(initialData: ProfileData, userId: string) {
@@ -15,11 +15,7 @@ export function useProfileForm(initialData: ProfileData, userId: string) {
   });
 
   const router = useRouter();
-
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+  const supabase = useMemo(() => createClient(), []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));

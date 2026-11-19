@@ -73,7 +73,7 @@ export function BMIGaugeCard({ height, weight }: BMIGaugeCardProps) {
   const currentDisplayRange = hoveredSegment || activeRange;
 
   return (
-    <div className="bg-[#121824] border border-white/[0.06] p-6 rounded-3xl text-white flex flex-col justify-between h-full shadow-2xl overflow-hidden">
+    <div className="bg-[#121824] border border-white/[0.06] p-5 sm:p-6 rounded-2xl sm:rounded-3xl text-white flex flex-col justify-between h-full shadow-2xl overflow-hidden">
       <div className="flex justify-between items-center w-full z-10">
         <div>
           <h3 className="text-base font-bold text-slate-200">
@@ -97,7 +97,7 @@ export function BMIGaugeCard({ height, weight }: BMIGaugeCardProps) {
 
       {bmiData ? (
         <div className="relative w-full my-auto flex flex-col items-center justify-center pt-3">
-          <div className="w-full max-w-[320px] aspect-[2/1.15] relative flex items-center justify-center p-2">
+          <div className="w-full max-w-[260px] sm:max-w-[320px] aspect-[2/1.15] relative flex items-center justify-center p-2">
             <svg
               className="w-full h-full overflow-visible"
               viewBox="0 0 240 135"
@@ -238,7 +238,7 @@ export function BMIGaugeCard({ height, weight }: BMIGaugeCardProps) {
           </div>
 
           <div className="text-center mt-2 z-10">
-            <span className="text-4xl font-black text-white tracking-tight">
+            <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
               {bmiData.bmi.toFixed(1)}
             </span>
             <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-widest mt-0.5">

@@ -112,7 +112,7 @@ export default function AdminDashboard({
       change: "Subscription ended",
       color: "text-rose-400",
       iconBg: "bg-rose-500/10 border-rose-500/20",
-      link: "/members?status=Inactive",
+      link: "/members?status=Expired",
     },
     {
       id: 4,
@@ -143,31 +143,31 @@ export default function AdminDashboard({
     <GlowLayout>
       <WelcomeToast />
 
-      <div className="flex flex-col md:flex-row h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
+      <div className="flex flex-col md:flex-row h-dvh w-full bg-[#0a0f1d] text-white overflow-hidden">
         <Sidebar />
-        <div className="flex-1 h-full bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
-          <div className="w-full max-w-7xl mx-auto px-6 py-6 md:px-12 md:py-8 space-y-6">
+        <div className="flex-1 min-h-0 bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
+          <div className="w-full max-w-7xl mx-auto px-4 py-5 sm:px-6 sm:py-6 md:px-10 md:py-8 space-y-5 sm:space-y-6">
             <div className="w-full">
-              <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
-                <div className="space-y-1.5 z-10">
+              <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl">
+                <div className="space-y-1 z-10">
                   <div className="flex items-center gap-2">
-                    <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white">
                       Dashboard Overview
                     </h1>
                   </div>
-                  <p className="text-slate-400 max-w-md text-sm md:text-base">
+                  <p className="text-slate-400 max-w-md text-xs sm:text-sm md:text-base">
                     Real-time gym performance and analytics
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 min-[380px]:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5">
               {stats.map((stat: StatItem) => (
                 <Link
                   key={stat.id}
                   href={stat.link}
-                  className="relative overflow-hidden rounded-2xl p-5 shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-emerald-500/20 hover:bg-white/[0.03] block cursor-pointer border border-white/[0.08] bg-[#11151f]"
+                  className="relative overflow-hidden rounded-2xl p-4 sm:p-5 shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-emerald-500/20 hover:bg-white/[0.03] block cursor-pointer border border-white/[0.08] bg-[#11151f]"
                 >
                   <div
                     className="pointer-events-none absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20 blur-2xl"
@@ -176,16 +176,16 @@ export default function AdminDashboard({
                         "radial-gradient(circle, #3b82f6, transparent 70%)",
                     }}
                   />
-                  <div className="relative flex justify-between items-start mb-3">
-                    <span className="text-xs font-medium text-slate-400 tracking-wide uppercase">
+                  <div className="relative flex justify-between items-start gap-2 mb-2.5 sm:mb-3">
+                    <span className="text-[11px] sm:text-xs font-medium text-slate-400 tracking-wide uppercase leading-tight">
                       {stat.title}
                     </span>
-                    <div className={`p-2.5 rounded-xl border ${stat.iconBg}`}>
+                    <div className={`p-2 sm:p-2.5 rounded-xl border shrink-0 ${stat.iconBg}`}>
                       {stat.icon}
                     </div>
                   </div>
                   <div className="relative flex flex-col">
-                    <span className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                    <span className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
                       {stat.value}
                     </span>
                     <span
@@ -198,12 +198,7 @@ export default function AdminDashboard({
               ))}
             </div>
 
-            <Link
-              href="/payments"
-              className="block cursor-pointer relative group"
-            >
-              <AnalyticsCharts data={chartData} />
-            </Link>
+            <AnalyticsCharts data={chartData} />
 
             <div className="rounded-2xl border border-white/[0.08] bg-[#11151f] overflow-hidden">
               <LatestMembersTable activities={recentActivities} />

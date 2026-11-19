@@ -173,23 +173,23 @@ export default function RevenueChart({
   const chartKey = `${timeFrame}-${paidTransactions.length}-${totalRevenue}`;
 
   return (
-    <div className="bg-[#121824] rounded-2xl border border-white/[0.04] p-6 shadow-xl w-full">
-      <div className="flex justify-between items-start mb-6">
+    <div className="bg-[#121824] rounded-2xl border border-white/[0.04] p-4 sm:p-6 shadow-xl w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 sm:mb-6">
         <div>
-          <h3 className="text-lg font-bold text-slate-200">
+          <h3 className="text-base sm:text-lg font-bold text-slate-200">
             Revenue Analytics
           </h3>
-          <p className="text-sm font-semibold text-blue-400 mt-0.5">
+          <p className="text-xs sm:text-sm font-semibold text-blue-400 mt-0.5">
             Total: ${totalRevenue.toLocaleString()}
           </p>
         </div>
 
-        <div className="flex items-center gap-1 bg-black/20 p-1 rounded-xl border border-white/[0.05]">
+        <div className="flex items-center gap-1 bg-black/20 p-1 rounded-xl border border-white/[0.05] w-full sm:w-auto">
           {(["Today", "Month", "Year"] as TimeFrame[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setTimeFrame(tab)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 timeFrame === tab
                   ? "bg-blue-600 text-white shadow-md shadow-blue-600/10"
                   : "text-slate-400 hover:text-slate-200"
@@ -201,11 +201,11 @@ export default function RevenueChart({
         </div>
       </div>
 
-      <div className="h-72 w-full text-xs">
+      <div className="h-60 sm:h-72 w-full text-[11px] sm:text-xs">
         <ResponsiveContainer width="100%" height="100%" key={chartKey}>
           <AreaChart
             data={chartData}
-            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+            margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
           >
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">

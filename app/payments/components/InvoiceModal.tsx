@@ -36,7 +36,7 @@ export default function InvoiceModal({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-md bg-[#121824] border border-white/[0.06] rounded-2xl p-6 shadow-2xl z-10 text-slate-200">
+      <div className="relative w-full max-w-md max-h-[90dvh] overflow-y-auto bg-[#121824] border border-white/[0.06] rounded-2xl p-5 sm:p-6 shadow-2xl z-10 text-slate-200">
         <div className="flex justify-between items-center border-b border-white/[0.04] pb-4 mb-6">
           <div>
             <h2 className="text-lg font-bold text-white tracking-tight">

@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,
@@ -26,7 +25,13 @@ import { signInWithGoogle } from "./actions";
 
 type AuthStage = "method" | "credentials" | "profile";
 
-function parseErrorMessage(err: any): string {
+interface ActionResult {
+  success?: boolean;
+  error?: string;
+  role?: string;
+}
+
+function parseErrorMessage(err: unknown): string {
   if (!err) return "Authentication failed. Please try again.";
   if (typeof err === "string") {
     const trimmed = err.trim();
@@ -35,20 +40,25 @@ function parseErrorMessage(err: any): string {
     }
   }
   if (typeof err === "object" && err !== null) {
-    if (typeof err.error === "string") return parseErrorMessage(err.error);
-    if (typeof err.message === "string") return parseErrorMessage(err.message);
+    const errObj = err as { error?: unknown; message?: unknown };
+    if (typeof errObj.error === "string") return parseErrorMessage(errObj.error);
+    if (typeof errObj.message === "string")
+      return parseErrorMessage(errObj.message);
   }
   return "Authentication failed. Please check your details and try again.";
 }
 
-export function LoginForm() {
-  const router = useRouter();
+export function LoginForm({
+  initialError = null,
+}: {
+  initialError?: string | null;
+}) {
   const [stage, setStage] = useState<AuthStage>("method");
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(initialError);
 
   const [profileData, setProfileData] = useState({
     fullName: "",
@@ -57,23 +67,6 @@ export function LoginForm() {
   });
 
   const signUpStepIndex = stage === "profile" ? 2 : 1;
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const errorParam = params.get("error");
-
-    if (errorParam === "no-account") {
-      setMsg("No account found with this email. Please sign up first.");
-      setIsSignUp(false);
-    } else if (errorParam === "already-exists") {
-      setMsg(
-        "An account with this email already exists. Try signing in instead.",
-      );
-      setIsSignUp(false);
-    } else if (errorParam === "auth-failed") {
-      setMsg("Authentication failed. Please try again.");
-    }
-  }, []);
 
   const handleGoogle = async () => {
     try {
@@ -109,10 +102,10 @@ export function LoginForm() {
       return setMsg("Password must be at least 6 characters.");
 
     setLoading(true);
-    let result: any = null;
+    let result: ActionResult | null = null;
     try {
       result = await (isSignUp ? signUpAction : signInAction)(fd);
-    } catch (err) {
+    } catch {
       setLoading(false);
       setMsg("Connection error. Please try again.");
       return;
@@ -127,7 +120,8 @@ export function LoginForm() {
     if (isSignUp) {
       setStage("profile");
     } else {
-      window.location.href = "/user/dashboard";
+      window.location.href =
+        result.role === "admin" ? "/dashboard" : "/user/dashboard";
     }
   };
 
@@ -145,10 +139,10 @@ export function LoginForm() {
     fd.append("phone", profileData.phone);
 
     setLoading(true);
-    let result: any = null;
+    let result: ActionResult | null = null;
     try {
       result = await completeProfileAction(fd);
-    } catch (err) {
+    } catch {
       setLoading(false);
       setMsg("Failed to save profile. Please try again.");
       return;
@@ -166,15 +160,15 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-md flex flex-col items-center">
       {isSignUp && (
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-5 sm:mb-6">
           <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white shrink-0 transition-all ${
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white shrink-0 transition-all ${
               signUpStepIndex > 1 ? "bg-emerald-500" : "bg-blue-600"
             }`}
           >
             {signUpStepIndex > 1 ? <Check size={18} /> : "1"}
           </div>
-          <div className="h-1 w-20 bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-1 w-14 sm:w-20 bg-slate-800 rounded-full overflow-hidden">
             <div
               className={`h-full bg-emerald-500 transition-all duration-300 ${
                 signUpStepIndex > 1 ? "w-full" : "w-0"
@@ -182,7 +176,7 @@ export function LoginForm() {
             />
           </div>
           <div
-            className={`w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm text-white shrink-0 transition-all ${
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center font-bold text-sm text-white shrink-0 transition-all ${
               signUpStepIndex === 2
                 ? "bg-blue-600 border-blue-600"
                 : "bg-slate-900 border-slate-800"
@@ -193,7 +187,7 @@ export function LoginForm() {
         </div>
       )}
 
-      <div className="w-full min-h-[410px] bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col justify-between">
+      <div className="w-full min-h-[380px] sm:min-h-[410px] bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl flex flex-col justify-between gap-4">
         <div className="text-center font-black tracking-wider text-xl uppercase">
           <span className="text-white">GYM</span>
           <span className="text-blue-500">HERO</span>
@@ -208,7 +202,7 @@ export function LoginForm() {
               exit={{ opacity: 0 }}
               className="space-y-4 my-auto"
             >
-              <h2 className="text-2xl font-bold text-white text-center">
+              <h2 className="text-xl sm:text-2xl font-bold text-white text-center">
                 {isSignUp ? "Create Account" : "Welcome Back"}
               </h2>
 

@@ -64,19 +64,19 @@ export function CompleteProfileForm({
 
   return (
     <div className="w-full max-w-md flex flex-col items-center">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white shrink-0 bg-emerald-500">
+      <div className="flex items-center gap-3 mb-5 sm:mb-6">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white shrink-0 bg-emerald-500">
           <Check size={18} />
         </div>
-        <div className="h-1 w-20 bg-slate-800 rounded-full overflow-hidden">
+        <div className="h-1 w-14 sm:w-20 bg-slate-800 rounded-full overflow-hidden">
           <div className="h-full bg-emerald-500 w-full transition-all duration-300" />
         </div>
-        <div className="w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm text-white shrink-0 bg-blue-600 border-blue-600">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center font-bold text-sm text-white shrink-0 bg-blue-600 border-blue-600">
           2
         </div>
       </div>
 
-      <div className="w-full min-h-[410px] bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col justify-between">
+      <div className="w-full min-h-[380px] sm:min-h-[410px] bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl flex flex-col justify-between gap-4">
         <div className="text-center font-black tracking-wider text-xl uppercase">
           <span className="text-white">GYM</span>
           <span className="text-blue-500">HERO</span>

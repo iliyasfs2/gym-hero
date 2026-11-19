@@ -9,21 +9,21 @@ export default function WelcomeToast() {
     const hasSeenToast = sessionStorage.getItem("admin_welcome_seen");
 
     if (!hasSeenToast) {
-      setIsOpen(true);
       sessionStorage.setItem("admin_welcome_seen", "true");
+      const openTimer = setTimeout(() => setIsOpen(true), 0);
+      const closeTimer = setTimeout(() => setIsOpen(false), 4000);
 
-      const timer = setTimeout(() => {
-        setIsOpen(false);
-      }, 4000);
-
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(openTimer);
+        clearTimeout(closeTimer);
+      };
     }
   }, []);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[9999] min-w-[320px] md:min-w-[400px] bg-[#111622]/95 backdrop-blur-md border border-white/[0.08] px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-3 duration-300">
+    <div className="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-[9999] w-[calc(100%-2rem)] max-w-md bg-[#111622]/95 backdrop-blur-md border border-white/[0.08] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-3 sm:gap-4 animate-in fade-in slide-in-from-top-3 duration-300">
       <div className="flex items-center gap-3">
         <div className="relative flex items-center justify-center shrink-0">
           <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-emerald-400">

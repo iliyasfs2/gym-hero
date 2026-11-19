@@ -86,7 +86,7 @@ export function SubscriptionCard({
   return (
     <div
       onClick={onToggle}
-      className={`relative rounded-3xl p-6 md:p-7 border cursor-pointer transition-all duration-300 ease-in-out select-none ${
+      className={`relative rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-7 border cursor-pointer transition-all duration-300 ease-in-out select-none ${
         isExpanded
           ? isActive
             ? "bg-white/[0.04] border-blue-500/50 shadow-2xl shadow-blue-500/10"
@@ -95,9 +95,9 @@ export function SubscriptionCard({
       }`}
     >
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
           <div
-            className={`p-3.5 rounded-2xl shrink-0 transition-colors duration-300 ${
+            className={`p-3 sm:p-3.5 rounded-2xl shrink-0 transition-colors duration-300 ${
               isExpanded
                 ? isActive
                   ? "bg-blue-500/10 text-blue-400 border border-blue-500/30"
@@ -105,13 +105,13 @@ export function SubscriptionCard({
                 : "bg-white/[0.04] text-slate-400 border border-white/[0.06]"
             }`}
           >
-            <CreditCard size={24} />
+            <CreditCard size={22} className="sm:w-6 sm:h-6" />
           </div>
 
-          <div>
-            <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <h3
-                className={`text-lg md:text-xl font-bold transition-colors duration-300 ${
+                className={`text-base sm:text-lg md:text-xl font-bold transition-colors duration-300 ${
                   isExpanded ? "text-white" : "text-slate-200"
                 }`}
               >
@@ -119,7 +119,7 @@ export function SubscriptionCard({
               </h3>
 
               <span
-                className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1 transition-colors duration-300 ${
+                className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1 transition-colors duration-300 shrink-0 ${
                   isActive
                     ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
                     : "bg-rose-500/10 border-rose-500/30 text-rose-400"
@@ -145,20 +145,20 @@ export function SubscriptionCard({
                 {subscription.duration}
               </span>
 
-              <div className="flex items-center gap-1.5 bg-black/30 border border-white/[0.06] px-2.5 py-1 rounded-lg text-slate-300">
-                <CalendarDays size={13} className="text-blue-400" />
+              <div className="flex flex-wrap items-center gap-1.5 bg-black/30 border border-white/[0.06] px-2.5 py-1 rounded-lg text-slate-300">
+                <CalendarDays size={13} className="text-blue-400 shrink-0" />
                 <span className="font-medium text-[11px]">
                   {formattedStart}
                 </span>
-                <ArrowRight size={11} className="text-slate-500" />
+                <ArrowRight size={11} className="text-slate-500 shrink-0" />
                 <span className="font-medium text-[11px]">{formattedEnd}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-white/[0.05]">
-          <span className="text-2xl font-black text-white tracking-tight">
+        <div className="flex items-center justify-between md:justify-end gap-4 sm:gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-white/[0.05]">
+          <span className="text-xl sm:text-2xl font-black text-white tracking-tight">
             ${subscription.price}
           </span>
 
@@ -225,7 +225,7 @@ export function SubscriptionCard({
           </div>
 
           <div className="space-y-2 pt-1">
-            <div className="flex justify-between items-center text-xs">
+            <div className="flex flex-wrap justify-between items-center gap-1.5 text-xs">
               <span className="text-slate-300 font-medium flex items-center gap-1.5">
                 <Clock
                   size={14}

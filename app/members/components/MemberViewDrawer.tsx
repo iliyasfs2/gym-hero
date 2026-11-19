@@ -29,14 +29,14 @@ export default function MemberViewDrawer({
         onClick={onClose}
       />
 
-      <div className="relative bg-[#141822] w-full max-w-3xl rounded-2xl border border-white/[0.08] text-white shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.08] bg-white/[0.01]">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-lg font-bold text-sky-400">
+      <div className="relative bg-[#141822] w-full max-w-3xl rounded-2xl border border-white/[0.08] text-white shadow-2xl overflow-hidden z-10 max-h-[90dvh] flex flex-col">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/[0.08] bg-white/[0.01] gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-base sm:text-lg font-bold text-sky-400 shrink-0">
               {member.name.charAt(0).toUpperCase()}
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-200">
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-200 truncate">
                 {member.name}
               </h2>
               <p className="text-xs text-slate-400">Detailed Member Profile</p>
@@ -44,7 +44,7 @@ export default function MemberViewDrawer({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-2 cursor-pointer transition-colors rounded-lg hover:bg-white/[0.05]"
+            className="text-slate-400 hover:text-white p-2 cursor-pointer transition-colors rounded-lg hover:bg-white/[0.05] shrink-0"
           >
             <svg
               className="w-5 h-5"
@@ -62,8 +62,8 @@ export default function MemberViewDrawer({
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="bg-[#0d1117] p-4 rounded-xl border border-white/[0.08] h-[190px] flex flex-col">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+          <div className="bg-[#0d1117] p-4 rounded-xl border border-white/[0.08] min-h-[160px] flex flex-col">
             <h3 className="flex items-center gap-2 text-xs font-semibold text-sky-400 uppercase tracking-wider mb-3 shrink-0">
               <svg
                 className="w-4 h-4"
@@ -80,26 +80,26 @@ export default function MemberViewDrawer({
               </svg>
               Basic Info
             </h3>
-            <div className="space-y-2 text-sm text-slate-300 overflow-y-auto pr-1">
-              <div className="flex justify-between">
-                <span className="text-slate-500">Name:</span>{" "}
-                <span className="font-medium text-slate-200">
+            <div className="space-y-2 text-sm text-slate-300">
+              <div className="flex justify-between gap-2">
+                <span className="text-slate-500 shrink-0">Name:</span>{" "}
+                <span className="font-medium text-slate-200 text-right break-words">
                   {member.name}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Phone:</span>{" "}
-                <span className="font-mono">{member.phone || "—"}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-slate-500 shrink-0">Phone:</span>{" "}
+                <span className="font-mono text-right">{member.phone || "—"}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Join Date:</span>{" "}
-                <span>{member.joinDate || "—"}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-slate-500 shrink-0">Join Date:</span>{" "}
+                <span className="text-right">{member.joinDate || "—"}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-500">Status:</span>
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-slate-500 shrink-0">Status:</span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-xs border ${
-                    member.status === "Active"
+                  className={`px-2 py-0.5 rounded-full text-xs border capitalize ${
+                    String(member.status || "").toLowerCase() === "active"
                       ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                       : "bg-rose-500/10 text-rose-400 border-rose-500/20"
                   }`}
@@ -110,7 +110,7 @@ export default function MemberViewDrawer({
             </div>
           </div>
 
-          <div className="bg-[#0d1117] p-4 rounded-xl border border-white/[0.08] h-[190px] flex flex-col">
+          <div className="bg-[#0d1117] p-4 rounded-xl border border-white/[0.08] min-h-[160px] flex flex-col">
             <h3 className="flex items-center gap-2 text-xs font-semibold text-sky-400 uppercase tracking-wider mb-3 shrink-0">
               <svg
                 className="w-4 h-4"
@@ -136,23 +136,23 @@ export default function MemberViewDrawer({
               </svg>
               Membership Details
             </h3>
-            <div className="space-y-2 text-sm text-slate-300 overflow-y-auto pr-1">
-              <div className="flex justify-between">
-                <span className="text-slate-500">Current Plan:</span>{" "}
-                <span className="font-bold text-slate-200">
+            <div className="space-y-2 text-sm text-slate-300">
+              <div className="flex justify-between gap-2">
+                <span className="text-slate-500 shrink-0">Current Plan:</span>{" "}
+                <span className="font-bold text-slate-200 text-right break-words">
                   {member.plan || "No plan assigned"}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Start Date:</span>{" "}
-                <span>{member.joinDate || "—"}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-slate-500 shrink-0">Start Date:</span>{" "}
+                <span className="text-right">{member.joinDate || "—"}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">End Date:</span>{" "}
-                <span>{endDate || "—"}</span>
+              <div className="flex justify-between gap-2">
+                <span className="text-slate-500 shrink-0">End Date:</span>{" "}
+                <span className="text-right">{endDate || "—"}</span>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-white/[0.08]">
-                <span className="text-slate-400">Days Left:</span>
+              <div className="flex justify-between items-center gap-2 pt-2 border-t border-white/[0.08]">
+                <span className="text-slate-400 shrink-0">Days Left:</span>
                 <span className="font-bold text-amber-400">
                   {daysLeft !== null ? `${daysLeft} days` : "—"}
                 </span>
@@ -160,7 +160,7 @@ export default function MemberViewDrawer({
             </div>
           </div>
 
-          <div className="bg-[#0d1117] p-4 rounded-xl border border-white/[0.08] h-[190px] flex flex-col md:col-span-2">
+          <div className="bg-[#0d1117] p-4 rounded-xl border border-white/[0.08] min-h-[160px] flex flex-col md:col-span-2">
             <h3 className="flex items-center gap-2 text-xs font-semibold text-sky-400 uppercase tracking-wider mb-3 shrink-0">
               <svg
                 className="w-4 h-4"

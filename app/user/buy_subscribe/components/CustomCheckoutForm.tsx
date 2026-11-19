@@ -28,7 +28,6 @@ interface CustomCheckoutFormProps {
 
 export default function CustomCheckoutForm({
   amount,
-  planName = "Pro Subscription",
   clientSecret,
   onClose,
   onSuccess,
@@ -108,7 +107,7 @@ export default function CustomCheckoutForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3 sm:gap-4">
         <div className="space-y-2">
           <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
             <Calendar size={14} className="text-blue-400" />

@@ -20,13 +20,114 @@ export default function MemberTable({
   const itemsPerPage = 5;
 
   const totalPages = Math.ceil(members.length / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
+  const safePage = Math.min(currentPage, Math.max(1, totalPages));
+  const indexOfLastItem = safePage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = members.slice(indexOfFirstItem, indexOfLastItem);
 
+  const getStatusStyles = (status?: string) => {
+    const normalized = String(status || "").toLowerCase();
+    if (normalized === "active") {
+      return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+    }
+    if (normalized === "expired" || normalized === "inactive") {
+      return "bg-rose-500/10 text-rose-400 border-rose-500/20";
+    }
+    return "bg-amber-500/10 text-amber-400 border-amber-500/20";
+  };
+
+  const formatPlanLabel = (plan?: string) => {
+    const val = plan || "";
+    return val.includes("(") ? val.split(" ")[0] : val;
+  };
+
   return (
     <div className="space-y-4 w-full">
-      <div className="bg-[#141822] rounded-2xl border border-white/[0.08] overflow-hidden shadow-xl w-full">
+      <div className="md:hidden space-y-3">
+        {currentItems.length === 0 ? (
+          <div className="bg-[#141822] rounded-2xl border border-white/[0.08] p-8 text-center text-sm text-slate-500">
+            No members found.
+          </div>
+        ) : (
+          currentItems.map((member) => {
+            const avatarLetter = member.name
+              ? member.name.charAt(0).toUpperCase()
+              : "?";
+            const memberName = member.name || "Unknown Member";
+            const memberPhone = member.phone || "-";
+            const memberPlan = formatPlanLabel(member.plan);
+            const memberStatus = member.status || "-";
+            const memberJoinDate = member.joinDate || "-";
+
+            return (
+              <div
+                key={member.id}
+                className="bg-[#141822] rounded-2xl border border-white/[0.08] p-4 space-y-3.5 shadow-lg"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sm font-bold text-sky-400 shrink-0">
+                      {avatarLetter}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm text-slate-100 truncate">
+                        {memberName}
+                      </p>
+                      <p className="text-xs text-slate-400 font-mono truncate mt-0.5">
+                        {memberPhone}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border shrink-0 capitalize ${getStatusStyles(member.status)}`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                    {memberStatus}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs pt-2.5 border-t border-white/[0.06]">
+                  <span
+                    className={`px-2.5 py-1 rounded-lg border font-medium ${
+                      memberPlan.toLowerCase().includes("gold")
+                        ? "bg-amber-500/5 text-amber-300 border-amber-500/10"
+                        : "bg-slate-500/5 text-slate-300 border-slate-500/10"
+                    }`}
+                  >
+                    {memberPlan || "No plan"}
+                  </span>
+                  <span className="text-slate-400 font-mono">
+                    Joined: {memberJoinDate}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  <button
+                    onClick={() => onViewClick(member)}
+                    className="py-2 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs font-medium text-sky-400 hover:bg-sky-500/10 transition-colors cursor-pointer"
+                  >
+                    View
+                  </button>
+                  <button
+                    onClick={() => onEditClick(member)}
+                    className="py-2 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs font-medium text-amber-400 hover:bg-amber-500/10 transition-colors cursor-pointer"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => onDeleteClick(member.id)}
+                    className="py-2 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      <div className="hidden md:block bg-[#141822] rounded-2xl border border-white/[0.08] overflow-hidden shadow-xl w-full">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -54,12 +155,7 @@ export default function MemberTable({
 
             <tbody className="divide-y divide-white/[0.06]">
               {currentItems.map((member) => {
-                const statusStyles =
-                  member.status === "Active"
-                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                    : member.status === "Expired"
-                      ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-                      : "bg-amber-500/10 text-amber-400 border-amber-500/20";
+                const statusStyles = getStatusStyles(member.status);
 
                 const avatarLetter = member.name
                   ? member.name.charAt(0).toUpperCase()
@@ -199,10 +295,10 @@ export default function MemberTable({
       </div>
 
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-4">
+        <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(Math.max(safePage - 1, 1))}
+            disabled={safePage === 1}
             className="px-3 py-1.5 rounded-xl bg-white/[0.02] border border-white/[0.08] text-xs text-slate-400 hover:bg-white/[0.05] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
           >
             &lt; Previous
@@ -213,7 +309,7 @@ export default function MemberTable({
               key={page}
               onClick={() => setCurrentPage(page)}
               className={`w-8 h-8 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
-                currentPage === page
+                safePage === page
                   ? "bg-sky-600 border-sky-500 text-white shadow-lg shadow-sky-600/20"
                   : "bg-white/[0.02] border-white/[0.08] text-slate-400 hover:bg-white/[0.05]"
               }`}
@@ -223,10 +319,8 @@ export default function MemberTable({
           ))}
 
           <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(Math.min(safePage + 1, totalPages))}
+            disabled={safePage === totalPages}
             className="px-3 py-1.5 rounded-xl bg-white/[0.02] border border-white/[0.08] text-xs text-slate-400 hover:bg-white/[0.05] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
           >
             Next &gt;

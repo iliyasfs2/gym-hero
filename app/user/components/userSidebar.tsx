@@ -34,9 +34,9 @@ export default function UserSidebar({
   const pathname = usePathname();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
-  const supabase = createClient();
 
   useEffect(() => {
+    const supabase = createClient();
     async function checkAdminRole() {
       const {
         data: { user },
@@ -56,13 +56,13 @@ export default function UserSidebar({
     }
 
     checkAdminRole();
-  }, [supabase]);
+  }, []);
 
   return (
     <>
       {isMenuOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/60 md:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
           onClick={onClose}
         />
       )}

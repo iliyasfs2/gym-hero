@@ -18,9 +18,9 @@ export default function LatestMembersTable({
   activities,
 }: LatestMembersTableProps): JSX.Element {
   return (
-    <div className="bg-[#141822] p-6 rounded-2xl shadow-xl border border-white/[0.08]">
+    <div className="bg-[#141822] p-4 sm:p-6 rounded-2xl shadow-xl border border-white/[0.08]">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-slate-200">
+        <h3 className="text-sm sm:text-base font-semibold text-slate-200">
           Latest Members
         </h3>
         <p className="text-xs text-slate-400 mt-0.5">
@@ -28,7 +28,63 @@ export default function LatestMembersTable({
         </p>
       </div>
 
-      <div className="overflow-x-auto w-full">
+      <div className="md:hidden space-y-3">
+        {activities.length === 0 ? (
+          <div className="py-8 text-center text-xs text-slate-500">
+            No newly registered members found.
+          </div>
+        ) : (
+          activities.map((member) => (
+            <div
+              key={member.id}
+              className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between gap-3"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20 shrink-0">
+                  <svg
+                    className="w-4 h-4 text-sky-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z"
+                    />
+                  </svg>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-200 truncate">
+                    {member.name}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs mt-0.5">
+                    <span className="text-sky-400 font-medium truncate">
+                      {member.plan}
+                    </span>
+                    <span className="text-slate-600">•</span>
+                    <span className="font-mono text-slate-400">
+                      {member.date}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <span
+                className={`text-[11px] px-2.5 py-1 rounded-full border font-semibold shrink-0 ${
+                  member.status === "Active"
+                    ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                    : "text-slate-400 bg-slate-500/10 border-slate-500/20"
+                }`}
+              >
+                {member.status}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="hidden md:block overflow-x-auto w-full">
         <table className="w-full table-fixed text-left border-collapse text-sm text-slate-300">
           <thead>
             <tr className="border-b border-white/[0.08] text-xs font-semibold text-slate-400 uppercase tracking-wider">

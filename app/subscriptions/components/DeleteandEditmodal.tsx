@@ -30,7 +30,7 @@ export default function DeleteandEditmodal({
   if (activeModal === "edit-plan" && plan) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
-        <div className="w-full max-w-md bg-[#121824] border border-white/[0.08] rounded-2xl p-6 shadow-2xl space-y-5 relative animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-full max-w-md max-h-[90dvh] overflow-y-auto bg-[#121824] border border-white/[0.08] rounded-2xl p-5 sm:p-6 shadow-2xl space-y-5 relative animate-in fade-in zoom-in-95 duration-200">
           <div className="flex justify-between items-center border-b border-white/[0.06] pb-4">
             <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-blue-400" />
@@ -146,7 +146,7 @@ export default function DeleteandEditmodal({
   if (activeModal === "delete-plan" && planId) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
-        <div className="w-full max-w-sm bg-[#121824] border border-white/[0.08] rounded-2xl p-6 shadow-2xl space-y-4 relative text-center animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-full max-w-sm max-h-[90dvh] overflow-y-auto bg-[#121824] border border-white/[0.08] rounded-2xl p-5 sm:p-6 shadow-2xl space-y-4 relative text-center animate-in fade-in zoom-in-95 duration-200">
           <div className="w-12 h-12 bg-rose-500/10 border border-rose-500/20 rounded-full flex items-center justify-center mx-auto text-rose-400">
             <AlertTriangle className="w-6 h-6" />
           </div>

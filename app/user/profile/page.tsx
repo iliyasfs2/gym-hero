@@ -1,44 +1,25 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "@/app/user/profile/components/profileForm";
 
 export const revalidate = 0;
 
 export default async function ProfilePage() {
-  const cookieStore = await cookies();
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
-            );
-          } catch {}
-        },
-      },
-    },
-  );
+  const supabase = await createClient();
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (authError || !user) {
     redirect("/login");
   }
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", session.user.id)
+    .eq("id", user.id)
     .single();
 
   let bmi = null;
@@ -50,18 +31,18 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8">
       <ProfileForm
         initialData={{
           name: profile?.full_name || "",
-          email: session.user.email || "",
+          email: user.email || "",
           phone: profile?.phone || "",
           age: profile?.age || "",
           height: profile?.height || "",
           weight: profile?.weight || "",
           bmi: bmi,
         }}
-        userId={session.user.id}
+        userId={user.id}
       />
     </div>
   );

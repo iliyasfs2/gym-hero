@@ -3,13 +3,19 @@
 import React, { useState } from "react";
 import { Dumbbell, Check } from "lucide-react";
 import { NewMemberFormData } from "./types";
-import { Member } from "@/app/components/context/AppContext";
+
+interface InitialMemberData {
+  name?: string;
+  phone?: string;
+  plan?: string;
+  joinDate?: string;
+}
 
 interface AddMemberModalProps {
-  initialData?: any;
+  initialData?: InitialMemberData | null;
   availablePlans: { id: string; name: string; price: number }[];
   onClose: () => void;
-  onSave: (data: any) => void;
+  onSave: (data: NewMemberFormData) => void;
 }
 
 export default function AddMemberModal({
@@ -23,10 +29,10 @@ export default function AddMemberModal({
   const defaultPlan = availablePlans.length > 0 ? availablePlans[0].name : "";
 
   const [formData, setFormData] = useState<NewMemberFormData>({
-    name: initialData ? initialData.name : "",
-    phone: initialData ? initialData.phone : "",
-    plan: initialData ? initialData.plan : defaultPlan,
-    startDate: initialData ? initialData.joinDate : todayString,
+    name: initialData?.name || "",
+    phone: initialData?.phone || "",
+    plan: initialData?.plan || defaultPlan,
+    startDate: initialData?.joinDate || todayString,
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,9 +48,9 @@ export default function AddMemberModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="glass-card-fixed bg-slate-950/80 w-full max-w-md rounded-2xl p-6 shadow-2xl border border-white/[0.08] relative">
-        <div className="mb-6">
-          <h3 className="text-xl font-bold text-slate-100">
+      <div className="glass-card-fixed bg-slate-950/80 w-full max-w-md max-h-[90dvh] overflow-y-auto rounded-2xl p-5 sm:p-6 shadow-2xl border border-white/[0.08] relative">
+        <div className="mb-5 sm:mb-6">
+          <h3 className="text-lg sm:text-xl font-bold text-slate-100">
             {initialData ? "Edit Gym Member" : "Add Gym Member"}
           </h3>
           <p className="text-xs text-slate-400 mt-1">

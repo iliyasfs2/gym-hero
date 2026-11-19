@@ -101,9 +101,9 @@ export default function MemberFilters({
           background: "radial-gradient(circle, #3b82f6, transparent 70%)",
         }}
       />
-      <div className="relative p-6">
-        <div className="mb-4">
-          <h3 className="text-base font-semibold text-slate-200">
+      <div className="relative p-4 sm:p-6">
+        <div className="mb-3 sm:mb-4">
+          <h3 className="text-sm sm:text-base font-semibold text-slate-200">
             Search Directory
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -145,7 +145,7 @@ export default function MemberFilters({
                 key={filter}
                 type="button"
                 onClick={() => setSelectedFilter(filter)}
-                className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                   isActive
                     ? "bg-gradient-to-b from-blue-500 to-blue-600 border-blue-400/50 text-white shadow-lg shadow-blue-600/30 ring-1 ring-inset ring-white/10"
                     : "bg-white/[0.02] border-white/[0.08] text-slate-400 hover:bg-white/[0.05] hover:text-white"

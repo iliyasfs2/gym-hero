@@ -74,22 +74,29 @@ export default async function DashboardPage() {
       : new Date().toISOString().split("T")[0],
   }));
 
-  const chartDataMap: {
-    [key: string]: { revenue: number; registrations: number };
-  } = {};
+  const chartDataMap: Record<
+    string,
+    { month: string; revenue: number; registrations: number }
+  > = {};
+
+  const getMonthKey = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = getMonthKey(d);
     const monthLabel = d.toLocaleString("en-US", { month: "short" });
-    chartDataMap[monthLabel] = { revenue: 0, registrations: 0 };
+    chartDataMap[key] = { month: monthLabel, revenue: 0, registrations: 0 };
   }
 
   safeSubscriptions.forEach((s) => {
     if (s.start_date) {
       const date = new Date(s.start_date);
-      const monthLabel = date.toLocaleString("en-US", { month: "short" });
-      if (chartDataMap[monthLabel] !== undefined) {
-        chartDataMap[monthLabel].revenue += Number(s.amount) || 0;
+      if (!isNaN(date.getTime())) {
+        const key = getMonthKey(date);
+        if (chartDataMap[key] !== undefined) {
+          chartDataMap[key].revenue += Number(s.amount) || 0;
+        }
       }
     }
   });
@@ -97,18 +104,16 @@ export default async function DashboardPage() {
   safeMembers.forEach((m) => {
     if (m.joined_date) {
       const date = new Date(m.joined_date);
-      const monthLabel = date.toLocaleString("en-US", { month: "short" });
-      if (chartDataMap[monthLabel] !== undefined) {
-        chartDataMap[monthLabel].registrations += 1;
+      if (!isNaN(date.getTime())) {
+        const key = getMonthKey(date);
+        if (chartDataMap[key] !== undefined) {
+          chartDataMap[key].registrations += 1;
+        }
       }
     }
   });
 
-  const chartData = Object.entries(chartDataMap).map(([month, values]) => ({
-    month,
-    revenue: values.revenue,
-    registrations: values.registrations,
-  }));
+  const chartData = Object.values(chartDataMap);
 
   return (
     <AdminDashboard

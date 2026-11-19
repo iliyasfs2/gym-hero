@@ -3,14 +3,19 @@
 import { createClient } from "./server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 
-function mapAuthError(err: any): string {
+function mapAuthError(err: unknown): string {
   if (!err) return "Authentication failed. Please try again.";
 
   let msg = "";
   if (typeof err === "string") {
     msg = err;
   } else if (typeof err === "object" && err !== null) {
-    msg = err.message || err.error_description || err.msg || "";
+    const errObj = err as {
+      message?: string;
+      error_description?: string;
+      msg?: string;
+    };
+    msg = errObj.message || errObj.error_description || errObj.msg || "";
   } else {
     msg = String(err);
   }
@@ -134,7 +139,7 @@ export async function signUpAction(formData: FormData) {
       success: true,
       userId: data.user.id,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     return { success: false, error: mapAuthError(err) };
   }
 }
@@ -159,14 +164,26 @@ export async function signInAction(formData: FormData) {
       return { success: false, error: mapAuthError(error) };
     }
 
+    let role = "user";
+
     if (data.user) {
       const fallbackName =
         data.user.user_metadata?.full_name || email.split("@")[0];
       await ensureUserRecords(data.user.id, email, fallbackName);
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .maybeSingle();
+
+      if (profile?.role) {
+        role = profile.role;
+      }
     }
 
-    return { success: true, user: data.user };
-  } catch (err: any) {
+    return { success: true, user: data.user, role };
+  } catch (err: unknown) {
     return { success: false, error: mapAuthError(err) };
   }
 }
@@ -179,10 +196,7 @@ export async function completeProfileAction(formData: FormData) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const passedUserId = formData.get("userId") as string;
-    const targetUserId = user?.id || passedUserId;
-
-    if (!targetUserId) {
+    if (!user?.id) {
       return { success: false, error: "Not authenticated" };
     }
 
@@ -198,17 +212,23 @@ export async function completeProfileAction(formData: FormData) {
         ? createServiceClient(supabaseUrl, serviceRoleKey)
         : supabase;
 
+    const { data: existingProfile } = await dbClient
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
     await dbClient.from("profiles").upsert({
-      id: targetUserId,
+      id: user.id,
       full_name: fullName,
       age: age ? Number(age) : null,
       phone: phone,
-      role: "user",
+      role: existingProfile?.role || "user",
       updated_at: new Date().toISOString(),
     });
 
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     return { success: false, error: mapAuthError(err) };
   }
 }

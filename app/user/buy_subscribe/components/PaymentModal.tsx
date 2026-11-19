@@ -7,7 +7,7 @@ import CustomCheckoutForm from "./CustomCheckoutForm";
 import { X, ShieldCheck, Lock, Check, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@/utils/supabase/clinet";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
@@ -37,12 +37,6 @@ export default function PaymentModal({
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-
   const handleSafeClose = useCallback(
     (e?: React.MouseEvent) => {
       if (e) e.stopPropagation();
@@ -65,6 +59,7 @@ export default function PaymentModal({
         let currentUserId = propUserId;
 
         if (!currentUserId) {
+          const supabase = createClient();
           const { data } = await supabase.auth.getUser();
           currentUserId = data.user?.id;
         }
@@ -104,7 +99,7 @@ export default function PaymentModal({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, amount, planName, propUserId, duration, supabase]);
+  }, [isOpen, amount, planName, propUserId, duration]);
 
   const handlePaymentSuccess = async () => {
     setIsSuccess(true);
@@ -139,7 +134,7 @@ export default function PaymentModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-slate-900/95 p-8 sm:p-10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] backdrop-blur-2xl z-10 text-white"
+          className="relative w-full max-w-lg max-h-[90dvh] overflow-y-auto rounded-3xl border border-white/10 bg-slate-900/95 p-5 sm:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] backdrop-blur-2xl z-10 text-white"
         >
           <div className="absolute -top-28 -left-28 w-56 h-56 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-28 -right-28 w-56 h-56 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
@@ -147,6 +142,7 @@ export default function PaymentModal({
           <button
             type="button"
             onClick={handleSafeClose}
+            aria-label="Close payment modal"
             className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all active:scale-90 z-20"
           >
             <X size={20} />
@@ -176,13 +172,13 @@ export default function PaymentModal({
                 </div>
               </motion.div>
             ) : (
-              <motion.div key="checkout" className="space-y-7 relative z-10">
-                <div className="flex items-center justify-between pb-6 border-b border-white/10">
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600/20 to-indigo-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner">
-                      <CreditCard size={24} />
+              <motion.div key="checkout" className="space-y-6 relative z-10">
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-5 pr-8 border-b border-white/10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-blue-600/20 to-indigo-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner shrink-0">
+                      <CreditCard size={22} />
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
                         <span className="relative flex h-2 w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -197,11 +193,11 @@ export default function PaymentModal({
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left sm:text-right">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                       {planName}
                     </span>
-                    <span className="text-2xl sm:text-3xl font-black text-blue-400 tracking-tight">
+                    <span className="text-xl sm:text-3xl font-black text-blue-400 tracking-tight">
                       ${amount.toFixed(2)}
                     </span>
                   </div>
@@ -250,7 +246,7 @@ export default function PaymentModal({
                   </Elements>
                 )}
 
-                <div className="pt-2 flex items-center justify-between text-[11px] text-slate-400">
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
                   <div className="flex items-center gap-1.5">
                     <Lock size={12} className="text-emerald-400" />
                     <span className="font-medium text-slate-300">

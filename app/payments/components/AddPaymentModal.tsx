@@ -186,9 +186,11 @@ export default function AddPaymentModal({
         onClick={() => router.push("/payments")}
       />
 
-      <div className="bg-[#121824] border border-white/[0.08] w-full max-w-lg rounded-2xl p-6 shadow-2xl relative z-10 animate-in fade-in zoom-in-95 duration-200 text-left">
-        <div className="mb-6">
-          <h3 className="text-xl font-bold text-slate-200">Add New Payment</h3>
+      <div className="bg-[#121824] border border-white/[0.08] w-full max-w-lg max-h-[90dvh] overflow-y-auto rounded-2xl p-5 sm:p-6 shadow-2xl relative z-10 animate-in fade-in zoom-in-95 duration-200 text-left">
+        <div className="mb-5 sm:mb-6">
+          <h3 className="text-lg sm:text-xl font-bold text-slate-200">
+            Add New Payment
+          </h3>
           <p className="text-xs text-slate-500 mt-1">
             Enter transaction details to register revenue
           </p>

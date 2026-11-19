@@ -10,7 +10,6 @@ interface AddPlanModalProps {
   onClose?: () => void;
 }
 
-
 export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
   const [formData, setFormData] = useState({
     name: "",
@@ -23,9 +22,11 @@ export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="glass-card-fixed bg-slate-950/80 w-full max-w-md rounded-2xl p-6 shadow-2xl border border-white/[0.08] relative">
-        <div className="mb-6">
-          <h3 className="text-xl font-bold text-slate-100">Add New Plan</h3>
+      <div className="glass-card-fixed bg-slate-950/80 w-full max-w-md max-h-[90dvh] overflow-y-auto rounded-2xl p-5 sm:p-6 shadow-2xl border border-white/[0.08] relative">
+        <div className="mb-5 sm:mb-6">
+          <h3 className="text-lg sm:text-xl font-bold text-slate-100">
+            Add New Plan
+          </h3>
           <p className="text-xs text-slate-400 mt-1">
             Enter subscription details to create a new gym package
           </p>
@@ -148,12 +149,22 @@ export default function AddPlanModal({ isOpen, onClose }: AddPlanModalProps) {
           </div>
 
           <div className="flex gap-3 mt-6 justify-end">
-            <Link
-              href="/subscriptions"
-              className="px-4 py-2 text-sm text-slate-400 hover:bg-white/[0.04] rounded-xl transition-colors cursor-pointer text-center flex items-center"
-            >
-              Cancel
-            </Link>
+            {onClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-sm text-slate-400 hover:bg-white/[0.04] rounded-xl transition-colors cursor-pointer text-center flex items-center"
+              >
+                Cancel
+              </button>
+            ) : (
+              <Link
+                href="/subscriptions"
+                className="px-4 py-2 text-sm text-slate-400 hover:bg-white/[0.04] rounded-xl transition-colors cursor-pointer text-center flex items-center"
+              >
+                Cancel
+              </Link>
+            )}
             <button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer shadow-lg shadow-blue-600/20"

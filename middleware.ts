@@ -51,7 +51,11 @@ export async function middleware(request: NextRequest) {
 
   const isLoginPage = pathname.startsWith("/login");
   const isRootPage = pathname === "/";
-  const isAdminRoute = pathname.startsWith("/dashboard");
+  const isAdminRoute =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/members") ||
+    pathname.startsWith("/payments") ||
+    pathname.startsWith("/subscriptions");
 
   const isPublicRoute =
     isLoginPage ||

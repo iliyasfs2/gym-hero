@@ -11,7 +11,7 @@ export function ProfileCard({
 }: ProfileCardProps) {
   return (
     <div
-      className={`bg-[#111622] border border-white/[0.08] p-8 rounded-3xl flex flex-col justify-between shadow-xl ${className}`}
+      className={`bg-[#111622] border border-white/[0.08] p-5 sm:p-7 md:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between shadow-xl ${className}`}
     >
       <div className="space-y-5">
         <div className="flex items-center gap-4 pb-4 border-b border-white/[0.06]">

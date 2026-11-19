@@ -30,10 +30,10 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
   } = useProfileForm(initialData, userId);
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-5 sm:space-y-8">
       {status.type && (
         <div
-          className={`p-5 rounded-2xl border flex items-center gap-3 text-base font-medium transition-all ${
+          className={`p-4 sm:p-5 rounded-2xl border flex items-center gap-3 text-sm sm:text-base font-medium transition-all ${
             status.type === "success"
               ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
               : "bg-rose-500/10 border-rose-500/20 text-rose-400"
@@ -56,8 +56,8 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
         onSignOut={handleSignOut}
       />
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <ProfileCard
             title="Account Details"
             icon={User}

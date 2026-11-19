@@ -38,7 +38,8 @@ export default function TransactionTable({
   });
 
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
+  const safePage = Math.min(currentPage, Math.max(1, totalPages));
+  const indexOfLastItem = safePage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredTransactions.slice(
     indexOfFirstItem,
@@ -72,10 +73,10 @@ export default function TransactionTable({
   };
 
   return (
-    <div className="bg-[#141822] rounded-2xl border border-white/[0.04] p-6 shadow-xl w-full space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="bg-[#141822] rounded-2xl border border-white/[0.04] p-4 sm:p-6 shadow-xl w-full space-y-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
         <div>
-          <h3 className="flex items-center gap-2 text-lg font-bold text-slate-200">
+          <h3 className="flex items-center gap-2 text-base sm:text-lg font-bold text-slate-200">
             Transaction Ledger
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">Recent Activities</p>
@@ -107,7 +108,74 @@ export default function TransactionTable({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-white/[0.02]">
+      <div className="md:hidden space-y-3">
+        {currentItems.length > 0 ? (
+          currentItems.map((tx, idx) => {
+            const statusStr = String(tx.status || "").toLowerCase();
+            const isPaid =
+              statusStr === "paid" ||
+              statusStr === "completed" ||
+              statusStr === "succeeded";
+            const isPending = statusStr === "pending";
+
+            return (
+              <div
+                key={tx.id || idx}
+                className="p-4 rounded-xl bg-black/20 border border-white/[0.06] space-y-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm text-slate-100 truncate">
+                      {tx.memberName || "N/A"}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenInvoice(tx)}
+                      className="text-blue-400 font-mono text-xs underline decoration-blue-500/30 underline-offset-2 mt-0.5 cursor-pointer"
+                    >
+                      {tx.invoiceNo || "N/A"}
+                    </button>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-medium border shrink-0 ${getStatusStyle(
+                      tx.status,
+                    )}`}
+                  >
+                    {isPaid ? "● Paid" : isPending ? "● Pending" : "● Failed"}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs pt-2 border-t border-white/[0.06]">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-blue-400">
+                      ${tx.amount ?? 0}
+                    </span>
+                    <span className="bg-slate-800 px-2 py-0.5 rounded-md text-slate-400 border border-white/[0.04]">
+                      {tx.method || "Card"}
+                    </span>
+                  </div>
+                  <span className="text-slate-400 font-mono">
+                    {tx.date || "N/A"}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => handleOpenInvoice(tx)}
+                  className="w-full text-xs bg-slate-800 hover:bg-slate-700 border border-white/[0.06] text-slate-200 px-3 py-2 rounded-lg transition-all cursor-pointer font-medium"
+                >
+                  View Receipt
+                </button>
+              </div>
+            );
+          })
+        ) : (
+          <div className="py-8 text-center text-xs text-slate-500">
+            No transactions found matching your search.
+          </div>
+        )}
+      </div>
+
+      <div className="hidden md:block overflow-x-auto rounded-xl border border-white/[0.02]">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-white/[0.04] bg-white/[0.01] text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -195,7 +263,7 @@ export default function TransactionTable({
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-white/[0.04] pt-4 mt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/[0.04] pt-4 mt-2">
           <div className="text-xs text-slate-500">
             Showing{" "}
             <span className="text-slate-300 font-medium">
@@ -212,10 +280,10 @@ export default function TransactionTable({
             entries
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(Math.max(safePage - 1, 1))}
+              disabled={safePage === 1}
               className="px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 border border-white/[0.04] text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
             >
               Previous
@@ -226,7 +294,7 @@ export default function TransactionTable({
                 key={page}
                 onClick={() => setCurrentPage(page)}
                 className={`w-8 h-8 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  currentPage === page
+                  safePage === page
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                     : "bg-slate-800 border border-white/[0.04] text-slate-400 hover:text-slate-200 hover:bg-slate-700"
                 }`}
@@ -236,10 +304,8 @@ export default function TransactionTable({
             ))}
 
             <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(Math.min(safePage + 1, totalPages))}
+              disabled={safePage === totalPages}
               className="px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 border border-white/[0.04] text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
             >
               Next

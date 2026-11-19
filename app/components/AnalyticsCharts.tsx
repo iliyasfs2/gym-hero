@@ -57,18 +57,18 @@ export default function AnalyticsCharts({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <div className="bg-[#141822] p-6 rounded-2xl shadow-xl border border-white/[0.08]">
-        <div className="flex items-center justify-between mb-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div className="bg-[#141822] p-4 sm:p-6 rounded-2xl shadow-xl border border-white/[0.08]">
+        <div className="flex items-center justify-between gap-3 mb-4">
           <div>
-            <h3 className="text-base font-semibold text-slate-200">
+            <h3 className="text-sm sm:text-base font-semibold text-slate-200">
               Monthly Revenue
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
               Total earnings trend over time
             </p>
           </div>
-          <div className="p-2.5 rounded-xl border bg-sky-500/10 border-sky-500/20">
+          <div className="p-2 sm:p-2.5 rounded-xl border bg-sky-500/10 border-sky-500/20 shrink-0">
             <svg
               className="w-5 h-5 text-sky-400"
               fill="none"
@@ -85,11 +85,11 @@ export default function AnalyticsCharts({
           </div>
         </div>
 
-        <div className="h-[260px] w-full text-xs font-mono">
+        <div className="h-[220px] sm:h-[260px] w-full text-[11px] sm:text-xs font-mono">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
-              margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
             >
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -135,17 +135,17 @@ export default function AnalyticsCharts({
         </div>
       </div>
 
-      <div className="bg-[#141822] p-6 rounded-2xl shadow-xl border border-white/[0.08]">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-[#141822] p-4 sm:p-6 rounded-2xl shadow-xl border border-white/[0.08]">
+        <div className="flex items-center justify-between gap-3 mb-4">
           <div>
-            <h3 className="text-base font-semibold text-slate-200">
+            <h3 className="text-sm sm:text-base font-semibold text-slate-200">
               Monthly Registrations
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
               New registered athletes per month
             </p>
           </div>
-          <div className="p-2.5 rounded-xl border bg-sky-500/10 border-sky-500/20">
+          <div className="p-2 sm:p-2.5 rounded-xl border bg-sky-500/10 border-sky-500/20 shrink-0">
             <svg
               className="w-5 h-5 text-sky-400"
               fill="none"
@@ -161,11 +161,11 @@ export default function AnalyticsCharts({
             </svg>
           </div>
         </div>
-        <div className="h-[260px] w-full text-xs font-mono">
+        <div className="h-[220px] sm:h-[260px] w-full text-[11px] sm:text-xs font-mono">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
-              margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
             >
               <CartesianGrid
                 strokeDasharray="3 3"

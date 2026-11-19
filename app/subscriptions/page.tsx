@@ -7,7 +7,6 @@ import PlanModals from "./components/DeleteandEditmodal";
 import { createClient } from "@/utils/supabase/server";
 import {
   Plus,
-  Package,
   Users,
   Calendar,
   CreditCard,
@@ -51,19 +50,19 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
 
   return (
     <GlowLayout>
-      <div className="flex flex-col md:flex-row h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
+      <div className="flex flex-col md:flex-row h-dvh w-full bg-[#0a0f1d] text-white overflow-hidden">
         <Sidebar />
-        <div className="flex-1 h-full bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
-          <div className="w-full max-w-7xl mx-auto px-6 py-6 md:px-12 md:py-8 space-y-6">
+        <div className="flex-1 min-h-0 bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
+          <div className="w-full max-w-7xl mx-auto px-4 py-5 sm:px-6 sm:py-6 md:px-10 md:py-8 space-y-5 sm:space-y-6">
             <div className="w-full">
-              <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
-                <div className="space-y-1.5 z-10">
+              <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl">
+                <div className="space-y-1 z-10">
                   <div className="flex items-center gap-2">
-                    <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white">
                       Subscriptions
                     </h1>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
                     Manage gym membership packages and pricing
                   </p>
                 </div>
@@ -78,7 +77,7 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
             </div>
 
             {plans && plans.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {plans.map((plan) => {
                   const memberCount = activeMembersMap[plan.id] || 0;
                   const isActive = plan.status === "Active";
@@ -86,7 +85,7 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
                   return (
                     <div
                       key={plan.id}
-                      className="bg-[#121824]/90 backdrop-blur-xl rounded-2xl p-6 border border-white/[0.06] shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-blue-500/30 flex flex-col justify-between min-h-[290px]"
+                      className="bg-[#121824]/90 backdrop-blur-xl rounded-2xl p-5 sm:p-6 border border-white/[0.06] shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-blue-500/30 flex flex-col justify-between min-h-0 sm:min-h-[280px]"
                     >
                       <div>
                         <div className="flex justify-between items-center mb-5">

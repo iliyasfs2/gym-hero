@@ -63,10 +63,6 @@ export function SubscriptionHistoryClient({
     initialExpandedId,
   );
 
-  useEffect(() => {
-    setExpandedId(initialExpandedId);
-  }, [initialExpandedId]);
-
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -131,8 +127,8 @@ export function SubscriptionHistoryClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-[#121824] border border-white/[0.06] p-2 md:p-3 rounded-2xl relative z-20">
-        <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center bg-[#121824] border border-white/[0.06] p-2.5 md:p-3 rounded-2xl relative z-20">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 w-full sm:w-auto">
           {FILTER_TABS.map((tab) => {
             const Icon = tab.icon;
             const isSelected = filter === tab.id;
@@ -141,7 +137,7 @@ export function SubscriptionHistoryClient({
                 key={tab.id}
                 type="button"
                 onClick={() => handleFilterChange(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
                   isSelected
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/25"
                     : "bg-white/[0.03] text-slate-400 hover:bg-white/[0.08] hover:text-slate-200"
@@ -215,11 +211,11 @@ export function SubscriptionHistoryClient({
       </div>
 
       {processedSubscriptions.length === 0 ? (
-        <div className="bg-[#121824] border border-white/[0.06] rounded-3xl p-16 text-center text-slate-400">
+        <div className="bg-[#121824] border border-white/[0.06] rounded-2xl sm:rounded-3xl p-8 sm:p-16 text-center text-sm text-slate-400">
           No subscriptions found matching your criteria.
         </div>
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-4 sm:space-y-5">
           {processedSubscriptions.map((sub) => (
             <SubscriptionCard
               key={sub.id}

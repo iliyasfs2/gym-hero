@@ -1,10 +1,27 @@
 import React from "react";
+import Link from "next/link";
 import RevenueChartWrapper from "./components/RevenueChartWrapper";
 import TransactionTable from "./components/PaymentTable";
 import AddPaymentModalWrapper from "./components/AddPaymentModal";
-import { Transaction } from "./components/types";
+import { PaymentStatus, Transaction } from "./components/types";
 import Sidebar from "@/app/components/Sidebar";
+import GlowLayout from "@/app/components/GlowLayout";
 import { createClient } from "@/utils/supabase/server";
+
+interface SubscriptionRow {
+  id: string;
+  user_id: string;
+  amount: number | string | null;
+  method?: string | null;
+  start_date?: string | null;
+  created_at?: string | null;
+  payment_status?: PaymentStatus | null;
+}
+
+interface ProfileRow {
+  id: string;
+  full_name: string | null;
+}
 
 export default async function PaymentsPage({
   searchParams,
@@ -18,20 +35,18 @@ export default async function PaymentsPage({
     .select("*")
     .order("created_at", { ascending: false });
 
-  const userIds = Array.from(
-    new Set((subscriptions || []).map((s: any) => s.user_id).filter(Boolean)),
-  );
-
   const { data: profiles } = await supabase
     .from("profiles")
     .select("id, full_name")
     .order("full_name", { ascending: true });
 
   const profileMap = new Map(
-    (profiles || []).map((p: any) => [p.id, p.full_name]),
+    ((profiles as ProfileRow[]) || []).map((p) => [p.id, p.full_name]),
   );
 
-  const transactions: Transaction[] = (subscriptions || []).map((sub: any) => ({
+  const transactions: Transaction[] = (
+    (subscriptions as SubscriptionRow[]) || []
+  ).map((sub) => ({
     id: sub.id,
     memberName: profileMap.get(sub.user_id) || "Unknown Member",
     amount: Number(sub.amount) || 0,
@@ -45,7 +60,7 @@ export default async function PaymentsPage({
     invoiceNo: `SUB-${String(sub.id).slice(0, 8).toUpperCase()}`,
   }));
 
-  const members = (profiles || []).map((p: any) => ({
+  const members = ((profiles as ProfileRow[]) || []).map((p) => ({
     id: p.id,
     fullName: p.full_name || "Unnamed User",
   }));
@@ -54,41 +69,43 @@ export default async function PaymentsPage({
   const isModalOpen = resolvedParams.modal === "add-payment";
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full bg-[#0a0f1d] text-white overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 h-full bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
-        <div className="w-full max-w-7xl mx-auto px-6 py-6 md:px-12 md:py-8 space-y-6">
-          <div className="w-full">
-            <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-3xl p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
-              <div className="space-y-1.5 z-10">
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                    Financial Transactions
-                  </h1>
+    <GlowLayout>
+      <div className="flex flex-col md:flex-row h-dvh w-full bg-[#0a0f1d] text-white overflow-hidden">
+        <Sidebar />
+        <div className="flex-1 min-h-0 bg-[#0a0f1d] overflow-y-auto z-10 transition-all duration-300">
+          <div className="w-full max-w-7xl mx-auto px-4 py-5 sm:px-6 sm:py-6 md:px-10 md:py-8 space-y-5 sm:space-y-6">
+            <div className="w-full">
+              <div className="relative overflow-hidden bg-gradient-to-r from-blue-900/40 via-[#121824] to-[#121824] border border-white/[0.08] rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl">
+                <div className="space-y-1 z-10">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white">
+                      Financial Transactions
+                    </h1>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                    Real-time gym revenue, timeframes, and member invoices.
+                  </p>
                 </div>
-                <p className="text-sm text-slate-400 mt-1.5">
-                  Real-time gym revenue, timeframes, and member invoices.
-                </p>
+                <Link
+                  href="?modal=add-payment"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-[0_4px_20px_rgba(59,130,246,0.25)] hover:shadow-[0_4px_25px_rgba(59,130,246,0.45)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border border-white/10"
+                >
+                  <span className="text-lg font-bold">+</span>
+                  <span>Add Payment</span>
+                </Link>
               </div>
-              <a
-                href="?modal=add-payment"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-[0_4px_20px_rgba(59,130,246,0.25)] hover:shadow-[0_4px_25px_rgba(59,130,246,0.45)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border border-white/10"
-              >
-                <span className="text-lg font-bold">+</span>
-                <span>Add Payment</span>
-              </a>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 gap-6">
-            <RevenueChartWrapper transactions={transactions} />
-          </div>
+            <div className="grid grid-cols-1 gap-6">
+              <RevenueChartWrapper transactions={transactions} />
+            </div>
 
-          <TransactionTable transactions={transactions} />
+            <TransactionTable transactions={transactions} />
+          </div>
         </div>
-      </div>
 
-      <AddPaymentModalWrapper isOpen={isModalOpen} members={members} />
-    </div>
+        <AddPaymentModalWrapper isOpen={isModalOpen} members={members} />
+      </div>
+    </GlowLayout>
   );
 }
