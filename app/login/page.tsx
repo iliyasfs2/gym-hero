@@ -28,13 +28,7 @@ export default async function LoginPage({
   } = await supabase.auth.getUser();
 
   if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    redirect(profile?.role === "admin" ? "/dashboard" : "/user/dashboard");
+    redirect("/user/dashboard");
   }
 
   const resolvedParams = await searchParams;

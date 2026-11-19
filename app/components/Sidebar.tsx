@@ -56,8 +56,8 @@ export default function Sidebar() {
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex h-full w-64 flex-col bg-[#121824] border-r border-white/[0.04] text-slate-400 shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 bottom-0 right-0 z-50 flex h-full w-64 flex-col bg-[#121824] border-l border-white/[0.04] text-slate-400 shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
+          isMobileOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="h-16 flex items-center justify-between px-6 border-b border-white/[0.04]">
@@ -106,7 +106,7 @@ export default function Sidebar() {
                 <span className="ml-4 text-sm">{item.name}</span>
 
                 {isActive && (
-                  <div className="absolute left-0 w-1 h-5 bg-blue-500 rounded-r-full" />
+                  <div className="absolute right-0 w-1 h-5 bg-blue-500 rounded-l-full" />
                 )}
               </Link>
             );
@@ -170,7 +170,7 @@ export default function Sidebar() {
                 </span>
 
                 {isActive && (
-                  <div className="absolute left-0 w-1 h-5 bg-blue-500 rounded-r-full" />
+                  <div className="absolute right-0 w-1 h-5 bg-blue-500 rounded-l-full" />
                 )}
               </Link>
             );

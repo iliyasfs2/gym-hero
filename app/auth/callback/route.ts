@@ -71,16 +71,7 @@ export async function GET(request: Request) {
           fallbackName,
         );
 
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", data.user.id)
-          .maybeSingle();
-
-        const destination =
-          profile?.role === "admin" ? "/dashboard" : "/user/dashboard";
-
-        return NextResponse.redirect(`${siteUrl}${destination}`);
+        return NextResponse.redirect(`${siteUrl}/user/dashboard`);
       }
     } catch (err) {
       console.error("Auth Callback Error:", err);

@@ -120,8 +120,7 @@ export function LoginForm({
     if (isSignUp) {
       setStage("profile");
     } else {
-      window.location.href =
-        result.role === "admin" ? "/dashboard" : "/user/dashboard";
+      window.location.href = "/user/dashboard";
     }
   };
 

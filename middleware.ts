@@ -51,11 +51,6 @@ export async function middleware(request: NextRequest) {
 
   const isLoginPage = pathname.startsWith("/login");
   const isRootPage = pathname === "/";
-  const isAdminRoute =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/members") ||
-    pathname.startsWith("/payments") ||
-    pathname.startsWith("/subscriptions");
 
   const isPublicRoute =
     isLoginPage ||
@@ -70,34 +65,8 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse;
   }
 
-  if (user) {
-    if (isLoginPage || isRootPage) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      const role = profile?.role || "user";
-      if (role === "admin") {
-        return redirectWithCookies("/dashboard");
-      } else {
-        return redirectWithCookies("/user/dashboard");
-      }
-    }
-
-    if (isAdminRoute) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      const role = profile?.role || "user";
-      if (role !== "admin") {
-        return redirectWithCookies("/user/dashboard");
-      }
-    }
+  if (user && (isLoginPage || isRootPage)) {
+    return redirectWithCookies("/user/dashboard");
   }
 
   return supabaseResponse;
